@@ -57,3 +57,24 @@ class ExpectHost():
             pytest.fail("TIMEOUT")
 
         return result
+
+
+@pytest.fixture
+def gcoap_example():
+    """
+    Runs the RIOT gcoap example process as an ExpectHost.
+    """
+    base_folder = os.environ.get('RIOTBASE', None)
+
+    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term')
+    term = host.connect()
+    # accepts either gcoap example app or riot-gcoap-test app
+    term.expect('gcoap .* app')
+
+    # set ULA
+    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64',
+                   'success:')
+    yield host
+
+    # teardown
+    host.disconnect()
