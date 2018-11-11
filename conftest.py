@@ -52,15 +52,7 @@ class ExpectHost():
         """Sends the given text to the host, and expects the given text
            response."""
         self.term.sendline(out_text)
-
-        result = False
-        try:
-            self.term.expect(in_text, self.timeout)
-            result = True
-        except pexpect.TIMEOUT:
-            pytest.fail("TIMEOUT")
-
-        return result
+        self.term.expect(in_text, self.timeout)
 
 
 @pytest.fixture

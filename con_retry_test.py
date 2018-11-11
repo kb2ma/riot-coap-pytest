@@ -18,6 +18,7 @@ Requires:
 
 import pytest
 import os
+import pexpect
 import time
 import logging
 
@@ -26,15 +27,17 @@ from conftest import ExpectHost
 logging.basicConfig(level=logging.INFO)
 
 pwd = os.getcwd()
+ignores = None
 
 #
 # fixtures and utility functions
 #
 
-@pytest.fixture(scope='module', params=[2, 4])
+@pytest.fixture(scope='module', params=[2, 5])
 def retry_server(request):
     """Runs a server that ignores requests as an ExpectHost."""
     cmd = './con_ignore_server.py -i {0}'.format(request.param)
+    setattr(request.module, 'ignores', request.param)
 
     host = ExpectHost(pwd, cmd)
     term = host.connect()
@@ -51,8 +54,13 @@ def test_get_time(retry_server, gcoap_example):
     client = gcoap_example
 
     time.sleep(2)
+    logging.info('ignores: {0}'.format(ignores))
 
     # expect response like '2018-11-04 11:21'
-    client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
-                     r'\d+-\d+-\d+ \d+:\d')
-
+    try:
+        client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
+                         r'\d+-\d+-\d+ \d+:\d')
+    except pexpect.TIMEOUT:
+        assert ignores >= 5, "Did not expect timeout"
+    else:
+        assert ignores < 5, "Expected timeout"
