@@ -12,6 +12,7 @@ import pytest
 import pexpect
 import os
 import signal
+import logging
 
 class ExpectHost():
     """
@@ -20,10 +21,11 @@ class ExpectHost():
     The pexpect spawn object itself is available as the 'term' attribute.
     """
 
-    def __init__(self, folder, term_cmd):
+    def __init__(self, folder, term_cmd, timeout=10):
         self.folder = folder
         self.term = None
         self.term_cmd = term_cmd
+        self.timeout = timeout
 
     def connect(self):
         """
@@ -33,8 +35,10 @@ class ExpectHost():
         """
         if self.folder:
             os.chdir(self.folder)
+        logging.info("pwd: " + os.getcwd())
+        
         self.term = pexpect.spawn(self.term_cmd, codec_errors='replace',
-                                  timeout=10)
+                                  timeout=self.timeout)
         return self.term
 
     def disconnect(self):
@@ -51,7 +55,7 @@ class ExpectHost():
 
         result = False
         try:
-            self.term.expect(in_text)
+            self.term.expect(in_text, self.timeout)
             result = True
         except pexpect.TIMEOUT:
             pytest.fail("TIMEOUT")
@@ -66,7 +70,8 @@ def gcoap_example():
     """
     base_folder = os.environ.get('RIOTBASE', None)
 
-    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term')
+    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term',
+                      timeout=100)
     term = host.connect()
     # accepts either gcoap example app or riot-gcoap-test app
     term.expect('gcoap .* app')

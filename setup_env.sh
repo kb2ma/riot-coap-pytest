@@ -6,4 +6,5 @@
 export RIOTBASE="/home/kbee/dev/riot/repo" 
 export LIBCOAP_BASE="/home/kbee/dev/libcoap/repo"
 export AIOCOAP_BASE="/home/kbee/dev/aiocoap/repo"
-export PYTHONPATH="${AIOCOAP_BASE}"
+export SOSCOAP_BASE="/home/kbee/dev/soscoap/repo"
+export PYTHONPATH="${AIOCOAP_BASE}:${SOSCOAP_BASE}"

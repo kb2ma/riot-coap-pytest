@@ -19,19 +19,24 @@ Requires:
 import pytest
 import os
 import time
+import logging
 
 from conftest import ExpectHost
+
+logging.basicConfig(level=logging.INFO)
+
+pwd = os.getcwd()
 
 #
 # fixtures and utility functions
 #
 
-@pytest.fixture
-def time_server():
-    """Runs a time server as an ExpectHost."""
-    cmd = './con_retry_server.py -d 5'
+@pytest.fixture(scope='module', params=[2, 4])
+def retry_server(request):
+    """Runs a server that ignores requests as an ExpectHost."""
+    cmd = './con_ignore_server.py -i {0}'.format(request.param)
 
-    host = ExpectHost(None, cmd)
+    host = ExpectHost(pwd, cmd)
     term = host.connect()
     yield host
 
@@ -42,9 +47,12 @@ def time_server():
 # tests
 #
 
-def test_get_time(time_server, gcoap_example):
+def test_get_time(retry_server, gcoap_example):
     client = gcoap_example
 
-    # expect response like 'Nov 04 11:21:58'
+    time.sleep(2)
+
+    # expect response like '2018-11-04 11:21'
     client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
-                     '\d+-\d+-\d+ \d+:\d')
+                     r'\d+-\d+-\d+ \d+:\d')
+
