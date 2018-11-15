@@ -72,3 +72,8 @@ def gcoap_example():
 
     # teardown
     host.disconnect()
+
+def pytest_addoption(parser):
+    # for client_get_test.py
+    parser.addini('client_get_repeat', 'number of times to repeat the test',
+                  default='1')

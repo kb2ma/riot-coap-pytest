@@ -62,21 +62,33 @@ def libcoap_server(request):
     # teardown
     host.disconnect()
 
+@pytest.fixture
+def qty_repeat(request):
+    """Provides the number of times to repeat the request"""
+    return int(request.config.getini('client_get_repeat'))
+
+def send_recv(client, is_confirm):
+    """
+    GET time from server.
+
+    :param ExpectHost client: Host that sends request
+    :param boolean is_confirm: True if confirmable message
+    """
+    # expect like 'Nov 04 11:21:58'
+    client.send_recv('coap get {0} fd00:bbbb::1 5683 /time'.format('-c' if is_confirm else ''),
+                     r'\w+ \w+ \d+:\d+:')
+
 #
 # tests
 #
 
-def test_client_get_non(libcoap_server, gcoap_example):
-    client = gcoap_example
+def test_client_get_non(libcoap_server, gcoap_example, qty_repeat):
+    for i in range(qty_repeat):
+        send_recv(gcoap_example, False)
+        time.sleep(1)
 
-    # expect like 'Nov 04 11:21:58'
-    client.send_recv('coap get fd00:bbbb::1 5683 /time',
-                     r'\w+ \w+ \d+:\d+:')
-
-def test_client_get_con(libcoap_server, gcoap_example):
-    client = gcoap_example
-
-    # expect like 'Nov 04 11:21:58'
-    client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
-                     r'\w+ \w+ \d+:\d+:')
+def test_client_get_con(libcoap_server, gcoap_example, qty_repeat):
+    for i in range(qty_repeat):
+        send_recv(gcoap_example, True)
+        time.sleep(1)
 
