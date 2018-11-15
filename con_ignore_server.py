@@ -1,17 +1,33 @@
 #!/usr/bin/env python
 
-from argparse import ArgumentParser
+# Copyright (c) 2018 Ken Bannister. All rights reserved.
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+
+"""
+Provides a server that ignores a configurable number of confirmable message
+message attempts. Provides a /time resource.
+
+Usage:
+    usage: con_ignore_server.py [-h] -i IGNORES
+    optional arguments:
+      -h, --help  show this help message and exit
+      -i IGNORES  count of requests to ignore
+      
+Example:
+
+Ignores initial request and first retry. Responds on second retry.
+
+$ PYTHONPATH="/home/kbee/src/soscoap" ./con_ignore_server.py -i 2
+"""
+
+from   argparse import ArgumentParser
 import datetime
-import logging
 from   soscoap.server   import CoapServer, IgnoreRequestException
 
-logging.basicConfig(level=logging.INFO)
-
 class ConIgnoreServer(object):
-    """
-    Provides a server that ignores a configurable number of confirmable
-    message attempts.
-    """
     def __init__(self, ignores):
         """Pass in count of confirmable messages to ignore."""
         self._server = CoapServer(port=5683)
@@ -19,8 +35,7 @@ class ConIgnoreServer(object):
         self._ignores = ignores
 
     def _getResource(self, resource):
-        '''Sets the value for the provided resource, for a GET request.'''
-        logging.info("resource path: {0}".format(resource.path))
+        """Sets the value for the provided resource, for a GET request."""
         if resource.path == '/time':
             if self._ignores > 0:
                 self._ignores = self._ignores - 1
@@ -40,7 +55,7 @@ class ConIgnoreServer(object):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('-i', dest='ignores', type=int, default=3,
+    parser.add_argument('-i', dest='ignores', type=int,
                         help='count of requests to ignore')
 
     args = parser.parse_args()

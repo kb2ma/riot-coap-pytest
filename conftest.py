@@ -35,7 +35,6 @@ class ExpectHost():
         """
         if self.folder:
             os.chdir(self.folder)
-        logging.info("pwd: " + os.getcwd())
         
         self.term = pexpect.spawn(self.term_cmd, codec_errors='replace',
                                   timeout=self.timeout)
@@ -46,7 +45,7 @@ class ExpectHost():
         try:
             os.killpg(os.getpgid(self.term.pid), signal.SIGKILL)
         except ProcessLookupError:
-            print("Process already stopped")
+            logging.info("Process already stopped")
 
     def send_recv(self, out_text, in_text):
         """Sends the given text to the host, and expects the given text
@@ -58,14 +57,12 @@ class ExpectHost():
 @pytest.fixture
 def gcoap_example():
     """
-    Runs the RIOT gcoap example process as an ExpectHost.
+    Runs the RIOT gcoap CLI example as an ExpectHost.
     """
     base_folder = os.environ.get('RIOTBASE', None)
 
-    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term',
-                      timeout=100)
+    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term')
     term = host.connect()
-    # accepts either gcoap example app or riot-gcoap-test app
     term.expect('gcoap .* app')
 
     # set ULA

@@ -5,13 +5,15 @@
 # directory for more details.
 
 """
-Tests CoAP retry capability.
+Tests CoAP confirmable message retry capability.
 
-Sends a GET request from gcoap to a server that ignores the request for a
-configurable timeout.
+Sends a GET request from gcoap to a server that ignores a configurable number
+of requests.
 
 Requires:
    - RIOTBASE env variable for RIOT root directory
+
+   - SOSCOAP_BASE env variable for soscoap root directory.
 
    - Network with ULA fd00:bbbb::1/64
 """
@@ -27,40 +29,50 @@ from conftest import ExpectHost
 logging.basicConfig(level=logging.INFO)
 
 pwd = os.getcwd()
-ignores = None
 
 #
 # fixtures and utility functions
 #
 
-@pytest.fixture(scope='module', params=[2, 5])
-def retry_server(request):
+@pytest.fixture
+def retry_server(ignores):
     """Runs a server that ignores requests as an ExpectHost."""
-    cmd = './con_ignore_server.py -i {0}'.format(request.param)
-    setattr(request.module, 'ignores', request.param)
+
+    cmd = './con_ignore_server.py -i {0}'.format(ignores)
 
     host = ExpectHost(pwd, cmd)
     term = host.connect()
+    # allow a couple of seconds for initialization
+    time.sleep(2)
     yield host
 
     # teardown
     host.disconnect()
 
+
+@pytest.fixture
+def ignores():
+    """Count of requests to ignore."""
+    return 0
+
+def send_recv(client):
+    # expects time value formatted like '2018-11-04 17:20'
+    client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
+                     r'\d+-\d+-\d+ \d+:\d')
+
 #
 # tests
 #
 
-def test_get_time(retry_server, gcoap_example):
-    client = gcoap_example
+@pytest.mark.parametrize('ignores', [2])
+def test_recover(retry_server, gcoap_example, ignores):
+    """Recover from 2 ignored requests and receive time value."""
+    send_recv(gcoap_example)
 
-    time.sleep(2)
-    logging.info('ignores: {0}'.format(ignores))
-
-    # expect response like '2018-11-04 11:21'
-    try:
-        client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
-                         r'\d+-\d+-\d+ \d+:\d')
-    except pexpect.TIMEOUT:
-        assert ignores >= 5, "Did not expect timeout"
-    else:
-        assert ignores < 5, "Expected timeout"
+@pytest.mark.parametrize('ignores', [5])
+def test_timeout(retry_server, gcoap_example, ignores):
+    """Times out from 5 ignored requests."""
+    gcoap_example.timeout = 100
+    
+    with pytest.raises(pexpect.TIMEOUT):
+        send_recv(gcoap_example)

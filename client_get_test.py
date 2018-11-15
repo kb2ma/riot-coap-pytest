@@ -66,10 +66,17 @@ def libcoap_server(request):
 # tests
 #
 
-def test_client_get(libcoap_server, gcoap_example):
+def test_client_get_non(libcoap_server, gcoap_example):
     client = gcoap_example
 
     # expect like 'Nov 04 11:21:58'
     client.send_recv('coap get fd00:bbbb::1 5683 /time',
-                     '\w+ \w+ \d+:\d+:')
+                     r'\w+ \w+ \d+:\d+:')
+
+def test_client_get_con(libcoap_server, gcoap_example):
+    client = gcoap_example
+
+    # expect like 'Nov 04 11:21:58'
+    client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
+                     r'\w+ \w+ \d+:\d+:')
 

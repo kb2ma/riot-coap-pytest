@@ -27,9 +27,7 @@ from conftest import ExpectHost
 
 @pytest.fixture
 def cord_cli():
-    """
-    Runs the RIOT cord_ep example process as an ExpectHost.
-    """
+    """Runs the RIOT cord_ep example process as an ExpectHost."""
     base_folder = os.environ.get('RIOTBASE', None)
 
     host = ExpectHost(os.path.join(base_folder, 'examples/cord_ep'), 'make term')
@@ -46,16 +44,13 @@ def cord_cli():
 
 
 @pytest.fixture
-def aiocoap_server():
+def rd_server():
     """Runs an aiocoap Resource Directory server as an ExpectHost."""
     folder = os.environ.get('AIOCOAP_BASE', None)
-    if folder:
-        cmd = os.path.join(folder, 'aiocoap-rd')
-    else:
-        cmd = 'aiocoap-rd'
 
-    host = ExpectHost(folder, cmd)
+    host = ExpectHost(folder, './aiocoap-rd')
     term = host.connect()
+    # allow a couple of seconds for initialization
     time.sleep(2)
     yield host
 
@@ -66,9 +61,7 @@ def aiocoap_server():
 # tests
 #
 
-def test_register(aiocoap_server, cord_cli):
-    client = cord_cli
+def test_register(rd_server, cord_cli):
 
-    # expect response like 'Nov 04 11:21:58'
-    client.send_recv('cord_ep register [fd00:bbbb::1]',
-                     'registration successful')
+    cord_cli.send_recv('cord_ep register [fd00:bbbb::1]',
+                       'registration successful')
