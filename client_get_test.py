@@ -17,10 +17,17 @@ Requires:
 """
 
 import pytest
+import logging
 import os
+import re
 import signal
+import time
 
+from collections import Counter
 from conftest import ExpectHost
+
+pwd = os.getcwd()
+logging.basicConfig(level=logging.INFO)
 
 #
 # fixtures and utility functions
@@ -63,6 +70,20 @@ def libcoap_server(request):
     host.disconnect()
 
 @pytest.fixture
+def aiocoap_client():
+    """Runs an aiocoap client to query gcoap_example as a server."""
+    cmd = './repeat_send_client.py -r [fd00:bbbb::2]'
+
+    host = ExpectHost(pwd, cmd)
+    term = host.connect()
+    # allow a couple of seconds for initialization
+    time.sleep(2)
+    yield host
+
+    # teardown
+    host.disconnect()
+
+@pytest.fixture
 def qty_repeat(request):
     """Provides the number of times to repeat the request"""
     return int(request.config.getini('client_get_repeat'))
@@ -82,13 +103,28 @@ def send_recv(client, is_confirm):
 # tests
 #
 
-def test_client_get_non(libcoap_server, gcoap_example, qty_repeat):
+def test_client_get(libcoap_server, gcoap_example):
+    """Single, simple GET request, non-confirmable and confirmable"""
+    send_recv(gcoap_example, False)
+    send_recv(gcoap_example, True)
+
+def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
+    """Repeats simple non-confirmable request. See qty_repeat in INI file."""
     for i in range(qty_repeat):
         send_recv(gcoap_example, False)
         time.sleep(1)
 
-def test_client_get_con(libcoap_server, gcoap_example, qty_repeat):
+def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client):
+    """Single, simple GET request, non-confirmable and confirmable"""
     for i in range(qty_repeat):
-        send_recv(gcoap_example, True)
+        send_recv(gcoap_example, False)
         time.sleep(1)
 
+    with open(r'repeat_send_client.log') as log:
+        logging.info('found file')
+        text = '2.05 Content'
+        c = Counter(text)
+        for line in log:
+            c[text] += (1 if re.search(text, line) else 0)
+        
+    assert c[text] == 3

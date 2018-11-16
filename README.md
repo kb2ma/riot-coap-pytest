@@ -31,7 +31,7 @@ As mentioned in the _Materials_ section, presently the script is based on instal
 
 Running the tests
 -----------------
-You can run all tests in this directory with a single invocation of the standard `pytest` command. See the [usage documentation](https://docs.pytest.org/en/latest/usage.html) for variations.
+You can run all tests in this directory with a single invocation of the standard `pytest` command. See the pytest [usage documentation](https://docs.pytest.org/en/latest/usage.html) for variations.
 
 ### Details
 gcoap attempts a maximum of four retries; five messages altogether including the initial request. The retries are timed with CoAP's exponential backoff mechanism.

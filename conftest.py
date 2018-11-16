@@ -40,6 +40,17 @@ class ExpectHost():
                                   timeout=self.timeout)
         return self.term
 
+    def run(self):
+        """
+        Starts OS host process.
+
+        :return: pexpect spawn object; the 'term' attribute for ExpectHost
+        """
+        if self.folder:
+            os.chdir(self.folder)
+        
+        return pexpect.run(self.term_cmd)
+
     def disconnect(self):
         """Kill OS host process"""
         try:
@@ -74,6 +85,7 @@ def gcoap_example():
     host.disconnect()
 
 def pytest_addoption(parser):
+    """Updates configuration within startup hook"""
     # for client_get_test.py
     parser.addini('client_get_repeat', 'number of times to repeat the test',
                   default='1')
