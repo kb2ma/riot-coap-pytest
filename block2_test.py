@@ -20,7 +20,7 @@ pwd = os.getcwd()
 # fixtures and utility functions
 #
 
-@pytest.fixture(scope='module', params=[32, 64])
+@pytest.fixture(scope='module', params=[16, 64])
 def block_size(request):
     """Provides the size of the block to test."""
     return request.param

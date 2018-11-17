@@ -93,7 +93,7 @@ def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client
     Client: repeats simple non-confirmable request from gcoap
     Server: repeats simple confirmable request to gcoap
     """
-    # client
+    # gcoap client
     for i in range(qty_repeat):
         send_recv(gcoap_example, False)
         time.sleep(1)
@@ -102,7 +102,7 @@ def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client
     while aiocoap_client.term.isalive():
         time.sleep(2)
 
-    # server runs in aiocoap_client; validate count of messages received
+    # validate gcoap server from count of responses received by aiocoap_client
     qty = 0
     with open(r'repeat_send_client.log') as log:
         for line in log:

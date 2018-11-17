@@ -24,8 +24,8 @@ Example:
 $ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -r [fd00:bbbb::2] -q 10
 """
 
-import logging
 import asyncio
+import logging
 import os
 from argparse import ArgumentParser
 from aiocoap import *
