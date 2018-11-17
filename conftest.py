@@ -16,9 +16,14 @@ import logging
 
 class ExpectHost():
     """
-    A networking host wrapped in a pexpect spawn.
+    A networking host wrapped in a pexpect spawn. There are two ways to run
+    the host:
 
-    The pexpect spawn object itself is available as the 'term' attribute.
+    1. connect() to start an interactive session, followed by send_recv() or
+       directly sending commands from the returned pexpect 'term' object.
+       Finally, use disconnect() to kill the session.
+
+    2. run() to start and run the process to completion with no interaction.
     """
 
     def __init__(self, folder, term_cmd, timeout=10):
@@ -36,19 +41,18 @@ class ExpectHost():
         if self.folder:
             os.chdir(self.folder)
         
-        self.term = pexpect.spawn(self.term_cmd, codec_errors='replace',
+        self.term = pexpect.spawnu(self.term_cmd, codec_errors='replace',
                                   timeout=self.timeout)
         return self.term
 
     def run(self):
         """
-        Starts OS host process.
+        Runs OS host process to completion
 
-        :return: pexpect spawn object; the 'term' attribute for ExpectHost
+        :return: String output from process
         """
         if self.folder:
             os.chdir(self.folder)
-        
         return pexpect.run(self.term_cmd)
 
     def disconnect(self):
@@ -83,6 +87,26 @@ def gcoap_example():
 
     # teardown
     host.disconnect()
+
+
+@pytest.fixture
+def nanocoap_server():
+    """
+    Runs the RIOT nanocoap server example as an ExpectHost. It does not provide
+    a CLI to customize network addresses. So, it is easiest to specify the link
+    address when defining the tap interface on the test host.
+    """
+    base_folder = os.environ.get('RIOTBASE', None)
+
+    host = ExpectHost(os.path.join(base_folder, 'examples/nanocoap_server'),
+                                   'make term')
+    term = host.connect()
+    term.expect('Configured network interfaces')
+    yield host
+
+    # teardown
+    host.disconnect()
+
 
 def pytest_addoption(parser):
     """Updates configuration within startup hook"""
