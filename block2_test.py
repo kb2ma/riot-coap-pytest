@@ -5,7 +5,7 @@
 # directory for more details.
 
 """
-Tests POSTing a large payload to nanocoap via block1.
+Tests GETting a large payload from nanocoap via block2.
 """
 
 import pytest
@@ -20,7 +20,7 @@ pwd = os.getcwd()
 # fixtures and utility functions
 #
 
-@pytest.fixture(scope='module', params=[16, 64])
+@pytest.fixture(scope='module', params=[32, 64])
 def block_size(request):
     """Provides the size of the block to test."""
     return request.param
@@ -29,13 +29,13 @@ def block_size(request):
 # tests
 #
 
-def test_block1(nanocoap_server, block_size):
-    """Verify signature for payload in block1_client."""
+def test_block2(nanocoap_server, block_size):
+    """Verify response from block2_client."""
     address = 'fe80::200:bbff:febb:2%tap0'
-    signature = b'BEF6D998FB07110712EC8DC5AF83EE399EAC875F7FE44423348A0E0D8254C8AA'
+    response = b'This is RIOT \\(Version'
 
-    host = ExpectHost(pwd, './block1_client.py -r [{0}] -b {1}'.format(address, block_size))
+    host = ExpectHost(pwd, './block2_client.py -r [{0}] -b {1}'.format(address, block_size))
 
     output = host.run()
-    assert re.search(b'2.04 Changed', output)
-    assert re.search(signature, output)
+    assert re.search(b'2.05 Content', output)
+    assert re.search(response, output)
