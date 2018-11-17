@@ -6,7 +6,8 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 """
-Repeat sending simple GET to RIOT instance
+Repeat sending simple GET to RIOT instance. Logs each message received so they
+may be validated. Waits two seconds between sends.
 
 Expected result:
 
@@ -16,10 +17,11 @@ Usage:
     optional arguments:
       -h, --help     show this help message and exit
       -r HOST        remote host for URI
+      -q QTY         quantity of messages to handle
 
 Example:
 
-$ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -r [fd00:bbbb::2]
+$ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -r [fd00:bbbb::2] -q 10
 """
 
 import logging
@@ -28,14 +30,14 @@ import os
 from argparse import ArgumentParser
 from aiocoap import *
 
-os.remove('repeat_send_client.log')
-logging.basicConfig(level=logging.INFO, filename='repeat_send_client.log')
+logfile ='repeat_send_client.log'
+os.remove(logfile)
+logging.basicConfig(level=logging.INFO, filename=logfile)
 
-async def main(host):
-    # create async context and wait a couple of seconds
+async def main(host, qty):
     context = await Context.create_client_context()
 
-    for i in range(3):
+    for i in range(qty):
         await asyncio.sleep(2)
         request = Message(code=GET, uri='coap://{0}/cli/stats'.format(host))
         response = await context.request(request).response
@@ -48,7 +50,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-r', dest='host', required=True,
                         help='remote host for URI')
+    parser.add_argument('-q', dest='qty', type=int, required=True,
+                        help='quantity of messages to handle')
 
     args = parser.parse_args()
 
-    asyncio.get_event_loop().run_until_complete(main(args.host))
+    asyncio.get_event_loop().run_until_complete(main(args.host, args.qty))

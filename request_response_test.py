@@ -5,15 +5,7 @@
 # directory for more details.
 
 """
-Simple client tests to a libcoap server.
-
-Requires:
-   - RIOTBASE env variable for RIOT root directory
-
-   - LIBCOAP_BASE env variable for libcoap root directory, or coap-server example
-  executable on PATH.
-
-   - Network with ULA fd00:bbbb::1/64
+Simple request and response tests to gcoap.
 """
 
 import pytest
@@ -32,25 +24,6 @@ logging.basicConfig(level=logging.INFO)
 #
 # fixtures and utility functions
 #
-
-@pytest.fixture
-def gcoap_example(request):
-    """Runs a gcoap example process, and provides a pexpect spawn object to
-       interact with it."""
-    folder = os.environ.get('RIOTBASE', None)
-
-    host = ExpectHost(os.path.join(folder, 'examples/gcoap'), 'make term')
-    term = host.connect()
-    # accepts either gcoap example app or riot-gcoap-test app
-    term.expect('gcoap .* app')
-
-    # set ULA
-    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64',
-                   'success:')
-    yield host
-
-    # teardown
-    host.disconnect()
 
 @pytest.fixture
 def libcoap_server(request):
@@ -72,7 +45,8 @@ def libcoap_server(request):
 @pytest.fixture
 def aiocoap_client():
     """Runs an aiocoap client to query gcoap_example as a server."""
-    cmd = './repeat_send_client.py -r [fd00:bbbb::2]'
+    # server handles same quantity of messages as client sends
+    cmd = './repeat_send_client.py -r [fd00:bbbb::2] -q {0}'.format(10)
 
     host = ExpectHost(pwd, cmd)
     term = host.connect()
@@ -86,7 +60,7 @@ def aiocoap_client():
 @pytest.fixture
 def qty_repeat(request):
     """Provides the number of times to repeat the request"""
-    return int(request.config.getini('client_get_repeat'))
+    return int(request.config.getini('request_response_repeat'))
 
 def send_recv(client, is_confirm):
     """
@@ -115,16 +89,23 @@ def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
         time.sleep(1)
 
 def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client):
-    """Single, simple GET request, non-confirmable and confirmable"""
+    """
+    Client: repeats simple non-confirmable request from gcoap
+    Server: repeats simple confirmable request to gcoap
+    """
+    # client
     for i in range(qty_repeat):
         send_recv(gcoap_example, False)
         time.sleep(1)
 
+    # wait for server to finish
+    while aiocoap_client.term.isalive():
+        time.sleep(2)
+
+    # server runs in aiocoap_client; validate count of messages received
+    qty = 0
     with open(r'repeat_send_client.log') as log:
-        logging.info('found file')
-        text = '2.05 Content'
-        c = Counter(text)
         for line in log:
-            c[text] += (1 if re.search(text, line) else 0)
-        
-    assert c[text] == 3
+            qty += (1 if re.search('2.05 Content', line) else 0)
+
+    assert qty == qty_repeat

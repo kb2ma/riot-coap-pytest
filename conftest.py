@@ -86,6 +86,6 @@ def gcoap_example():
 
 def pytest_addoption(parser):
     """Updates configuration within startup hook"""
-    # for client_get_test.py
-    parser.addini('client_get_repeat', 'number of times to repeat the test',
+    # for request_response_test.py
+    parser.addini('request_response_repeat', 'number of times to repeat the test',
                   default='1')
