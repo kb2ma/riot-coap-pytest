@@ -41,7 +41,7 @@ def aiocoap_client():
 #
 
 def test_observe(gcoap_example, aiocoap_client):
-    """Verify registration and notification."""
+    """Verify registration, notification, and cancellation."""
     # Registration OK; expecting 2 options -- Observer and Content-Format
     aiocoap_client.term.expect(r'First response:.*2\.05.*2 option')
 

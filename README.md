@@ -5,7 +5,7 @@ With all of these tests, your confidence in the results will increase by watchin
 These tests all were developed using native on a recent Ubuntu Linux. However, they all may be run just as well on hardware.
 
 Materials
----------
+=========
 
 In addition to pytest, you'll need a recent copy of these projects:
 
@@ -15,8 +15,16 @@ In addition to pytest, you'll need a recent copy of these projects:
 
 The _Setup_ section below assumes these projects are installed in source code form, not with pip or setup.py.
 
+RIOT Examples
+-------------
+These tests use the following RIOT examples, which must be precompiled:
+
+* cord_ep
+* gcoap
+* nanocoap_server
+
 Setup
------
+=====
 
 Some of these tests use a tap interface to communicate between a native RIOT instance and the Linux desktop. They require an fd00:bbbb::/64 ULA-based network defined on the desktop as:
 ```
@@ -30,8 +38,5 @@ Some tests require environment variables. See `setup_env.sh`. You MUST adapt it 
 As mentioned in the _Materials_ section, presently the script is based on installation of aiocoap and soscoap in source form.
 
 Running the tests
------------------
+=================
 You can run all tests in this directory with a single invocation of the standard `pytest` command. See the pytest [usage documentation](https://docs.pytest.org/en/latest/usage.html) for variations.
-
-### Details
-gcoap attempts a maximum of four retries; five messages altogether including the initial request. The retries are timed with CoAP's exponential backoff mechanism.
