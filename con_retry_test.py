@@ -73,6 +73,6 @@ def test_recover(retry_server, gcoap_example, ignores):
 def test_timeout(retry_server, gcoap_example, ignores):
     """Times out from 5 ignored requests."""
     gcoap_example.timeout = 100
-    
+
     with pytest.raises(pexpect.TIMEOUT):
         send_recv(gcoap_example)

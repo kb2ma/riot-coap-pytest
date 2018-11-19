@@ -5,18 +5,16 @@
 # directory for more details.
 
 """
-Tests registration to a CORE Resource Directory server.
+Tests simple registration to a CORE Resource Directory server.
 
-Requires:
-   - RIOTBASE env variable for RIOT root directory
-
-   - AIOCOAP_BASE env variable for aiocoap root directory.
-
-   - Network with ULA fd00:bbbb::1/64
+Requires cord_epsim example is compiled with unicast address of RD server
+(RD_ADDR). By default the example uses the link local all nodes multicast
+address (ff02::1).
 """
 
 import pytest
 import os
+import pexpect
 import time
 
 from conftest import ExpectHost
@@ -30,13 +28,9 @@ def cord_cli():
     """Runs the RIOT cord_ep example process as an ExpectHost."""
     base_folder = os.environ.get('RIOTBASE', None)
 
-    host = ExpectHost(os.path.join(base_folder, 'examples/cord_ep'), 'make term')
+    host = ExpectHost(os.path.join(base_folder, 'examples/cord_epsim'), 'make term')
     term = host.connect()
-    term.expect('CoRE RD client example!')
-
-    # set ULA
-    host.send_recv('ifconfig 7 add unicast fd00:bbbb::2/64',
-                   'success:')
+    term.expect('CoAP simplified RD registration example!')
     yield host
 
     # teardown
@@ -61,7 +55,10 @@ def rd_server():
 # tests
 #
 
-def test_register(rd_server, cord_cli):
+def test_run(rd_server, cord_cli):
+    # must read to end of output from startup; we don't expect anything further
+    cord_cli.term.expect('lt:.*$')
 
-    cord_cli.send_recv('cord_ep register [fd00:bbbb::1]',
-                       'registration successful')
+    # not expecting any output to CLI
+    with pytest.raises(pexpect.TIMEOUT):
+        cord_cli.term.expect('.', 60)
