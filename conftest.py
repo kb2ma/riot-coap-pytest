@@ -72,17 +72,32 @@ class ExpectHost():
 @pytest.fixture
 def gcoap_example():
     """
-    Runs the RIOT gcoap CLI example as an ExpectHost.
+    Runs the RIOT gcoap CLI example as an ExpectHost. Uses BOARD environment
+    variable to run on real hardware.
     """
     base_folder = os.environ.get('RIOTBASE', None)
+    board       = os.environ.get('BOARD', 'native')
 
-    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), 'make term')
+    if board == 'native':
+        term_cmd = 'make term'
+        term_resp = 'gcoap .* app'
+    else:
+        term_cmd = 'make term BOARD="{0}"'.format(board)
+        term_resp = 'Welcome to pyterm!'
+        
+    host = ExpectHost(os.path.join(base_folder, 'examples/gcoap'), term_cmd)
     term = host.connect()
-    term.expect('gcoap .* app')
+    term.expect(term_resp)
 
     # set ULA
-    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64',
-                   'success:')
+    if board == 'native':
+        host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64',
+                       'success:')
+    else:
+        host.send_recv('ifconfig 8 add unicast fd00:bbbb::2/64',
+                        'success:')
+        term.sendline('nib neigh add 8 fd00:bbbb::1')
+        host.send_recv('nib neigh', 'fd00:bbbb::1')
     yield host
 
     # teardown
@@ -94,7 +109,8 @@ def nanocoap_server():
     """
     Runs the RIOT nanocoap server example as an ExpectHost. It does not provide
     a CLI to customize network addresses. So, it is easiest to specify the link
-    address when defining the tap interface on the test host.
+    address when defining the tap interface on the test host. Tests usually
+    expect the environment variable TAP_LLADDR for this address.
     """
     base_folder = os.environ.get('RIOTBASE', None)
 
@@ -107,6 +123,9 @@ def nanocoap_server():
     # teardown
     host.disconnect()
 
+#
+# hooks
+#
 
 def pytest_addoption(parser):
     """Updates configuration within startup hook"""

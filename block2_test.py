@@ -31,7 +31,7 @@ def block_size(request):
 
 def test_block2(nanocoap_server, block_size):
     """Verify response from block2_client."""
-    address = 'fe80::200:bbff:febb:2%tap0'
+    address = os.environ.get('TAP_LLADDR_SUT', None)
     response = b'This is RIOT \\(Version'
 
     host = ExpectHost(pwd, './block2_client.py -r [{0}] -b {1}'.format(address, block_size))
