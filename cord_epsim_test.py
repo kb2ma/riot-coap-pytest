@@ -8,8 +8,7 @@
 Tests simple registration to a CORE Resource Directory server.
 
 Requires cord_epsim example is compiled with unicast address of RD server
-(RD_ADDR). By default the example uses the link local all nodes multicast
-address (ff02::1).
+(RD_ADDR). By default the example uses TAP_LLADDR_EXT defined in setup_env.sh.
 """
 
 import pytest
@@ -30,7 +29,7 @@ def cord_cli():
 
     host = ExpectHost(os.path.join(base_folder, 'examples/cord_epsim'), 'make term')
     term = host.connect()
-    term.expect('CoAP simplified RD registration example!')
+    term.expect('Simplified CoRE RD registration example')
     yield host
 
     # teardown
@@ -56,9 +55,18 @@ def rd_server():
 #
 
 def test_run(rd_server, cord_cli):
-    # must read to end of output from startup; we don't expect anything further
-    cord_cli.term.expect('lt:.*$')
-
-    # not expecting any output to CLI
+    # ensure compiled with RD server address
     with pytest.raises(pexpect.TIMEOUT):
-        cord_cli.term.expect('.', 60)
+        cord_cli.term.expect(r'\[::1\]')
+
+    # initial response
+    cord_cli.term.expect(r'lt:.*s\r\n')
+    cord_cli.term.expect(r'updating registration with RD \[fe80::.*5683\r\n')
+
+    # verify re-registration
+    cord_cli.term.expect(r'updating registration with RD \[fe80::.*5683\r\n', 60)
+
+    # verify no error, likely caused by overflowing PDU resend buffer if no
+    # ACK from server
+    with pytest.raises(pexpect.TIMEOUT):
+        cord_cli.term.expect(r'error', 120)
