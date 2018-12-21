@@ -25,13 +25,16 @@ $ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -r [fd00:bbbb::2] 
 """
 
 import asyncio
+import contextlib
 import logging
 import os
 from argparse import ArgumentParser
 from aiocoap import *
 
-logfile ='repeat_send_client.log'
-os.remove(logfile)
+logfile = 'repeat_send_client.log'
+with contextlib.suppress(FileNotFoundError):
+    os.remove(logfile)
+
 logging.basicConfig(level=logging.INFO, filename=logfile)
 
 async def main(host, qty):
