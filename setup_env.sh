@@ -11,4 +11,7 @@ export BOARD="native"
 # Link local address defined for the tap interface for the RIOT board. Must
 # include tap interface itself.
 export TAP_LLADDR_SUT="fe80::200:bbff:febb:2%tap0"
+# Link local address defined for the tap interface for the remote endpoing.
+# Must not include tap interface itself.
+export TAP_LLADDR_REMOTE="fe80::200:bbff:febb:1"
 export PYTHONPATH="${SOSCOAP_BASE}:${AIOCOAP_BASE}"

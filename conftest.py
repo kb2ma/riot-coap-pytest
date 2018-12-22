@@ -123,6 +123,23 @@ def nanocoap_server():
     # teardown
     host.disconnect()
 
+@pytest.fixture
+def nanocoap_cli():
+    """
+    Runs the RIOT nanocoap CLI test app as an ExpectHost. Cannot explicitly
+    set network addressing due to limitations of the app.
+    """
+    base_folder = os.environ.get('RIOTBASE', None)
+
+    host = ExpectHost(os.path.join(base_folder, 'tests/coap_nanocoap'), 'make term')
+    term = host.connect()
+    term.expect('nanocoap test app')
+
+    yield host
+
+    # teardown
+    host.disconnect()
+
 #
 # hooks
 #

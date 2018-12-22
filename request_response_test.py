@@ -73,6 +73,17 @@ def send_recv(client, is_confirm):
     client.send_recv('coap get {0} fd00:bbbb::1 5683 /time'.format('-c' if is_confirm else ''),
                      r'\w+ \w+ \d+:\d+:')
 
+def send_recv_nano(client, server_addr):
+    """
+    nanocoap client specific implementation; does not support non-confirmable
+
+    :param ExpectHost client: Host that sends request
+    :param string server_addr: server address
+    """
+    # expect like 'Nov 04 11:21:58'
+    client.send_recv('client get {0} 5683 /time'.format(server_addr),
+                     r'\w+ \w+ \d+:\d+:')
+
 #
 # tests
 #
@@ -81,6 +92,19 @@ def test_client_get(libcoap_server, gcoap_example):
     """Single, simple GET request, non-confirmable and confirmable"""
     send_recv(gcoap_example, False)
     send_recv(gcoap_example, True)
+
+def test_client_get_nano(libcoap_server, nanocoap_cli):
+    """Single, simple GET request, non-confirmable and confirmable"""
+    board = os.environ.get('BOARD', 'native')
+    addr  = None
+
+    if board == 'native':
+        addr = os.environ.get('TAP_LLADDR_REMOTE', None)
+    else:
+        return
+
+    send_recv_nano(nanocoap_cli, addr)
+
 
 def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
     """Repeats simple non-confirmable request. See qty_repeat in INI file."""
