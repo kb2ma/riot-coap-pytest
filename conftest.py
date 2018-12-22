@@ -131,7 +131,7 @@ def nanocoap_cli():
     """
     base_folder = os.environ.get('RIOTBASE', None)
 
-    host = ExpectHost(os.path.join(base_folder, 'tests/coap_nanocoap'), 'make term')
+    host = ExpectHost(os.path.join(base_folder, 'tests/nanocoap_cli'), 'make term')
     term = host.connect()
     term.expect('nanocoap test app')
 
