@@ -73,15 +73,17 @@ def send_recv(client, is_confirm):
     client.send_recv('coap get {0} fd00:bbbb::1 5683 /time'.format('-c' if is_confirm else ''),
                      r'\w+ \w+ \d+:\d+:')
 
-def send_recv_nano(client, server_addr):
+def send_recv_nano(client, is_confirm, server_addr):
     """
-    nanocoap client specific implementation; does not support non-confirmable
+    nanocoap client specific implementation
 
     :param ExpectHost client: Host that sends request
+    :param boolean is_confirm: True if confirmable message
     :param string server_addr: server address
     """
     # expect like 'Nov 04 11:21:58'
-    client.send_recv('client get {0} 5683 /time'.format(server_addr),
+    cmd = 'client get {0} {1} 5683 /time'
+    client.send_recv(cmd.format('-c' if is_confirm else '', server_addr),
                      r'\w+ \w+ \d+:\d+:')
 
 #
@@ -103,7 +105,8 @@ def test_client_get_nano(libcoap_server, nanocoap_cli):
     else:
         return
 
-    send_recv_nano(nanocoap_cli, addr)
+    send_recv_nano(nanocoap_cli, True, addr)
+    send_recv_nano(nanocoap_cli, False, addr)
 
 
 def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
