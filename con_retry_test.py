@@ -7,15 +7,15 @@
 """
 Tests CoAP confirmable message retry capability.
 
-Sends a GET request from gcoap to a server that ignores a configurable number
-of requests.
+Sends a GET request to a server that ignores a configurable number of requests.
+Tests both the gcoap example and a nanocoap client.
 
 Requires:
    - RIOTBASE env variable for RIOT root directory
 
-   - SOSCOAP_BASE env variable for soscoap root directory.
+   - Network with ULA fd00:bbbb::1/64 for gcoap
 
-   - Network with ULA fd00:bbbb::1/64
+   - Remote with TAP_LLADDR_REMOTE on native for nanocoap
 """
 
 import pytest
@@ -60,6 +60,15 @@ def send_recv(client):
     client.send_recv('coap get -c fd00:bbbb::1 5683 /time',
                      r'\d+-\d+-\d+ \d+:\d')
 
+def send_recv_nano(client, server_addr):
+    """
+    nanocoap client specific implementation; no '-c' switch, always
+    confirmable
+    """
+    # expects time value formatted like '2018-11-04 17:20'
+    client.send_recv('client get {0} 5683 /time'.format(server_addr),
+                     r'\d+-\d+-\d+ \d+:\d')
+
 #
 # tests
 #
@@ -69,6 +78,24 @@ def test_recover(retry_server, gcoap_example, ignores):
     """Recover from 2 ignored requests and receive time value."""
     send_recv(gcoap_example)
 
+@pytest.mark.parametrize('ignores', [2])
+def test_recover_nano(retry_server, nanocoap_cli, ignores):
+    """
+    Recover from 2 ignored requests and receive time value. nanocoap client
+    specific implementation. Only runs on native due to address limitation
+    with nanocoap_cli app.
+    """
+    board = os.environ.get('BOARD', 'native')
+    addr  = None
+    
+    if board == 'native':
+        addr = os.environ.get('TAP_LLADDR_REMOTE', None)
+    else:
+        return
+
+    send_recv_nano(nanocoap_cli, addr)
+
+
 @pytest.mark.parametrize('ignores', [5])
 def test_timeout(retry_server, gcoap_example, ignores):
     """Times out from 5 ignored requests."""
@@ -76,3 +103,23 @@ def test_timeout(retry_server, gcoap_example, ignores):
 
     with pytest.raises(pexpect.TIMEOUT):
         send_recv(gcoap_example)
+
+
+@pytest.mark.parametrize('ignores', [5])
+def test_timeout_nano(retry_server, nanocoap_cli, ignores):
+    """Times out from 5 ignored requests. nanocoap client specific
+    implementation. Only runs on native due to address limitation
+    with nanocoap_cli app.
+    """
+    board = os.environ.get('BOARD', 'native')
+    addr  = None
+
+    if board == 'native':
+        addr = os.environ.get('TAP_LLADDR_REMOTE', None)
+    else:
+        return
+
+    nanocoap_cli.timeout = 100
+
+    with pytest.raises(pexpect.TIMEOUT):
+        send_recv_nano(nanocoap_cli, addr)
