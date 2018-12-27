@@ -26,11 +26,16 @@ class ExpectHost():
     2. run() to start and run the process to completion with no interaction.
     """
 
-    def __init__(self, folder, term_cmd, timeout=10):
-        self.folder = folder
-        self.term = None
+    def __init__(self, folder, term_cmd, timeout=10, env={}, name=''):
+        """
+        env is a dictionary of environment variables
+        """
+        self.folder   = folder
+        self.term     = None
         self.term_cmd = term_cmd
-        self.timeout = timeout
+        self.timeout  = timeout
+        self.env      = env
+        self.name     = name
 
     def connect(self):
         """
@@ -42,7 +47,8 @@ class ExpectHost():
             os.chdir(self.folder)
         
         self.term = pexpect.spawnu(self.term_cmd, codec_errors='replace',
-                                  timeout=self.timeout)
+                                  timeout=self.timeout,
+                                  env=self.env)
         return self.term
 
     def run(self):
@@ -73,7 +79,7 @@ class ExpectHost():
 def gcoap_example():
     """
     Runs the RIOT gcoap CLI example as an ExpectHost. Uses BOARD environment
-    variable to run on real hardware.
+    variable to run on real hardware. Sets up fd00:bbbb::2/64 network endpoint.
     """
     base_folder = os.environ.get('RIOTBASE', None)
     board       = os.environ.get('BOARD', 'native')
