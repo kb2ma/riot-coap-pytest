@@ -86,6 +86,40 @@ Some tests allow use of a physical board for the RIOT instance. They require an 
     $ sudo ./tunslip6 -s ttyUSB0 -t tun0 fd00:bbbb::1/64
 ```
 
+rpl2os
+------
+This setup allows use of a physical board via RPL to a Linux host. This setup requires two boards:
+
+  * RPL root node attached to the Linux host, running the gnrc_border_router example
+  * RPL leaf node running gcoap/nanocoap
+
+**RPL root node**
+
+The _make term_ step below initializes addressing and routing on the Linux host before starting the terminal.
+
+For this node, we specify the address of the wireless interface on the fd00:aaaa::/64 network. Then we initialize the node as RPL root.
+
+```
+    $ BOARD="samr21-xpro" make clean all flash
+    $ BOARD="samr21-xpro" IPV6_PREFIX="fd00:aaaa::/64" SERIAL="/dev/ttyACM0" make term
+    
+    > ifconfig 6 add unicast fd00:aaaa::1/64
+    > rpl init
+    > rpl root 1 fd00:aaaa::1
+```
+
+
+**RPL leaf node**
+
+After setting up the RPL root node, just initialize rpl for the leaf node.
+
+```
+    $ BOARD="samr21-xpro" make clean all flash
+    $ BOARD="samr21-xpro" SERIAL="/dev/ttyACM0" make term
+
+    > rpl init
+```
+
 
 Running the tests
 =================
