@@ -4,6 +4,7 @@
 # how the tests also would be run from within RIOT.
 
 export RIOTBASE="/home/kbee/dev/riot/repo" 
+export RIOTAPPSBASE="/home/kbee/dev/riot-apps/repo" 
 export LIBCOAP_BASE="/home/kbee/dev/libcoap/repo"
 export AIOCOAP_BASE="/home/kbee/dev/aiocoap/repo"
 export SOSCOAP_BASE="/home/kbee/dev/soscoap/repo"

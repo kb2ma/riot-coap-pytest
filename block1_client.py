@@ -25,7 +25,7 @@ $ PYTHONPATH="/home/kbee/src/aiocoap" ./block1_client.py -r [fe80::200:bbff:febb
 WARNING:coap.blockwise-requester:Block1 option completely ignored by server,
 assuming it knows what it is doing.
 Result: 2.04 Changed
-b'BEF6D998FB07110712EC8DC5AF83EE399EAC875F7FE44423348A0E0D8254C8AA'
+b'C496DF5946783990BEC5EFDC2999530EEB9175B83094BAE66170FF2431FC896E'
 """
 
 import logging
@@ -41,8 +41,7 @@ async def main(host, block_size):
     context = await Context.create_client_context()
     await asyncio.sleep(2)
 
-    payload = (b'If one advances confidently in the direction of his dreams,'
-               b' he will meet with a success unexpected in common hours.')
+    payload = b'If one advances confidently in the direction of his dreams...'
 
     request = Message(code=POST, payload=payload,
                       uri='coap://{0}/sha256'.format(host))
