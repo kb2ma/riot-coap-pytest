@@ -22,8 +22,6 @@ Example:
 
 $ PYTHONPATH="/home/kbee/src/aiocoap" ./block1_client.py -r [fe80::200:bbff:febb:2%tap0]
 
-WARNING:coap.blockwise-requester:Block1 option completely ignored by server,
-assuming it knows what it is doing.
 Result: 2.04 Changed
 b'C496DF5946783990BEC5EFDC2999530EEB9175B83094BAE66170FF2431FC896E'
 """
