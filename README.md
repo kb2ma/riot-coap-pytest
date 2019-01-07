@@ -101,10 +101,10 @@ For this node, we specify the address of the wireless interface on the fd00:aaaa
 
 ```
     $ BOARD="samr21-xpro" make clean all flash
-    $ BOARD="samr21-xpro" IPV6_PREFIX="fd00:aaaa::/64" SERIAL="/dev/ttyACM0" make term
+    $ BOARD="samr21-xpro" IPV6_PREFIX="fd00:aaaa::/64" PORT="/dev/ttyACM0" make term
     
     > ifconfig 6 add unicast fd00:aaaa::1/64
-    > rpl init
+    > rpl init 6
     > rpl root 1 fd00:aaaa::1
 ```
 
@@ -115,9 +115,9 @@ After setting up the RPL root node, just initialize rpl for the leaf node.
 
 ```
     $ BOARD="samr21-xpro" make clean all flash
-    $ BOARD="samr21-xpro" SERIAL="/dev/ttyACM0" make term
+    $ BOARD="samr21-xpro" PORT="/dev/ttyACM1" make term
 
-    > rpl init
+    > rpl init 6
 ```
 
 
