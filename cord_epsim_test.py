@@ -69,4 +69,4 @@ def test_run(rd_server, cord_cli):
     # verify no error, likely caused by overflowing PDU resend buffer if no
     # ACK from server
     with pytest.raises(pexpect.TIMEOUT):
-        cord_cli.term.expect(r'error', 120)
+        cord_cli.term.expect(r'(error|warning)', 120)
