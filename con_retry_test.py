@@ -15,11 +15,6 @@ Requires:
 
    - Native only board; network with tap bridge and two endpoints, tap0 and
      tap1.
-
-To set up tap bridge and endpoints:
-
-    $ cd $RIOTBASE/dist/tools/tapsetup
-    $ ./tapsetup -c 2
 """
 
 import pytest
