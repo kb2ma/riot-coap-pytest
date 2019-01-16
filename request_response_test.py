@@ -5,7 +5,7 @@
 # directory for more details.
 
 """
-Simple request and response tests to gcoap.
+Simple request and response tests to gcoap and nanocoap.
 """
 
 import pytest
