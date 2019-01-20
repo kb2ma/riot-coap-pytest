@@ -12,6 +12,8 @@ In addition to pytest, you'll need a recent copy of these projects:
 * [aiocoap](https://github.com/chrysn/aiocoap)
 * [libcoap](https://github.com/obgm/libcoap)
 * [soscoap](https://github.com/kb2ma/soscoap)
+* [riot-apps](https://github.com/kb2ma/riot-apps) -- forked from RIOT-OS/applications; use kb2ma-master branch
+
 
 The _Setup_ section below assumes these projects are installed in source code form, not with pip or setup.py.
 
@@ -28,6 +30,10 @@ These tests also use the following RIOT tests, which must be precompiled:
 
 * nanocoap_cli
 
+These tests also use the following RIOT apps, which must be precompiled:
+
+* gcoap-block
+
 Setup
 =====
 The network/board interfaces used for tests have evolved over time. The table below show the currently supported setups.
@@ -35,7 +41,8 @@ The network/board interfaces used for tests have evolved over time. The table be
 
 |       Test       |     Endpoints      | Client | Notes |
 | ---------------- | ------------------ | ------ | ----- |
-| block1           | native2os          | nanocoap | |
+| block1           | native2os          | nanocoap | Must run only test_block1_buf |
+| block1           | native2native      | gcoap | gcoap client uses code not merged yet into RIOT master|
 | block2           | native2os          | nanocoap | |
 | con_retry        | native20s          | gcoap | |
 | cord_ep          | native2os, slip2os | gcoap | |
