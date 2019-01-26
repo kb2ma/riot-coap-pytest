@@ -44,7 +44,7 @@ The network/board interfaces used for tests have evolved over time. The table be
 | block1           | native2os          | nanocoap | Must run only test_block1_buf |
 | block1           | native2native      | gcoap | gcoap client uses code not merged yet into RIOT master|
 | block2           | native2os          | nanocoap | |
-| con_retry        | native20s          | gcoap | |
+| con_retry        | native2os          | gcoap | |
 | cord_ep          | native2os, slip2os | gcoap | |
 | cord_epsim       | native2os, slip2os | gcoap | |
 | observe          | native2os, slip2os | gcoap | |
