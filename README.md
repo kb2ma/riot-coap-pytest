@@ -9,7 +9,7 @@ Materials
 
 In addition to pytest, you'll need a recent copy of these projects:
 
-* [aiocoap](https://github.com/chrysn/aiocoap)
+* [aiocoap](https://github.com/chrysn/aiocoap) -- must install linkheader Python package; see the *Slimmer installations* portion of aiocoap docs
 * [libcoap](https://github.com/obgm/libcoap)
 * [soscoap](https://github.com/kb2ma/soscoap)
 * [riot-apps](https://github.com/kb2ma/riot-apps) -- forked from RIOT-OS/applications; use kb2ma-master branch
@@ -24,7 +24,7 @@ These tests use the following RIOT examples, which must be precompiled:
 * gcoap
 * nanocoap_server
 * cord_ep
-* cord_epsim
+* cord_epsim -- for native2os endpoints, when compile, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local
 
 These tests also use the following RIOT tests, which must be precompiled:
 
