@@ -90,7 +90,7 @@ def test_run(rd_server, cord_cli):
 
 @pytest.mark.parametrize('request_path', ['/riot/foo', '/riot/info'])
 def test_server(cord_cli, libcoap_client, request_path):
-    """Test expectd output from cord_cli resources"""
+    """Test expected output from cord_cli resources"""
     # allow a couple of seconds for cord_cli to initialize
     time.sleep(2)
 
@@ -101,3 +101,5 @@ def test_server(cord_cli, libcoap_client, request_path):
         assert re.search(b'bar', output) is not None
     elif request_path == '/riot/info':
         assert re.search(b'{"ep":.*,"lt":', output) is not None
+    else:
+        pytest.fail('unknown request_path')
