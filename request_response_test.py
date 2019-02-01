@@ -46,7 +46,7 @@ def libcoap_server(request):
 def aiocoap_client():
     """Runs an aiocoap client to query gcoap_example as a server."""
     # server handles same quantity of messages as client sends
-    cmd = './repeat_send_client.py -r [fd00:bbbb::2] -q {0}'.format(10)
+    cmd = './repeat_send_client.py -r [fd00:bbbb::2] -p /cli/stats -q {0}'.format(10)
 
     host = ExpectHost(pwd, cmd)
     term = host.connect()

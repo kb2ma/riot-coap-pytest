@@ -37,12 +37,12 @@ with contextlib.suppress(FileNotFoundError):
 
 logging.basicConfig(level=logging.INFO, filename=logfile)
 
-async def main(host, qty):
+async def main(host, path, qty):
     context = await Context.create_client_context()
 
     for i in range(qty):
         await asyncio.sleep(2)
-        request = Message(code=GET, uri='coap://{0}/cli/stats'.format(host))
+        request = Message(code=GET, uri='coap://{0}{1}'.format(host, path))
         response = await context.request(request).response
 
         logging.info('Result: %s\n%r'%(response.code, response.payload))
@@ -53,9 +53,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-r', dest='host', required=True,
                         help='remote host for URI')
+    parser.add_argument('-p', dest='path', required=True,
+                        help='URI path for resource')
     parser.add_argument('-q', dest='qty', type=int, required=True,
                         help='quantity of messages to handle')
 
     args = parser.parse_args()
 
-    asyncio.get_event_loop().run_until_complete(main(args.host, args.qty))
+    asyncio.get_event_loop().run_until_complete(main(args.host, args.path, args.qty))
