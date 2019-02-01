@@ -13,11 +13,15 @@ address (ff02::1).
 """
 
 import pytest
+import logging
 import os
 import pexpect
+import re
 import time
 
 from conftest import ExpectHost
+
+logging.basicConfig(level=logging.INFO)
 
 #
 # fixtures and utility functions
@@ -25,7 +29,7 @@ from conftest import ExpectHost
 
 @pytest.fixture
 def cord_cli():
-    """Runs the RIOT cord_ep example process as an ExpectHost."""
+    """Runs the RIOT cord_epsim example process as an ExpectHost."""
     base_folder = os.environ.get('RIOTBASE', None)
 
     host = ExpectHost(os.path.join(base_folder, 'examples/cord_epsim'), 'make term')
@@ -51,14 +55,49 @@ def rd_server():
     # teardown
     host.disconnect()
 
+
+@pytest.fixture
+def libcoap_client(request_path):
+    """Runs a libcoap example client as an ExpectHost to retrieve a response."""
+    folder = os.environ.get('LIBCOAP_BASE', None)
+    cmd_folder = folder + '/examples/' if folder else ''
+    addr   = os.environ.get('TAP_LLADDR_SUT', None)
+
+    cmd = '{0}coap-client -N -m get -T 5a -U coap://[{1}]{2}'
+    cmd_text = cmd.format(cmd_folder, addr, request_path)
+
+    host = ExpectHost(folder, cmd_text)
+    yield host
+
+
+@pytest.fixture
+def request_path():
+    """Provides the URI to request on the cord_epsim server"""
+    return '/.well-known/core'
+
 #
 # tests
 #
 
 def test_run(rd_server, cord_cli):
+    """Test expected output after connection to rd server"""
     # must read to end of output from startup; we don't expect anything further
     cord_cli.term.expect('lt:.*$')
 
     # not expecting any output to CLI
     with pytest.raises(pexpect.TIMEOUT):
         cord_cli.term.expect('.', 60)
+
+@pytest.mark.parametrize('request_path', ['/riot/foo', '/riot/info'])
+def test_server(cord_cli, libcoap_client, request_path):
+    """Test expectd output from cord_cli resources"""
+    # allow a couple of seconds for cord_cli to initialize
+    time.sleep(2)
+
+    output = libcoap_client.run()
+    logging.info('output {0}'.format(output))
+
+    if request_path == '/riot/foo':
+        assert re.search(b'bar', output) is not None
+    elif request_path == '/riot/info':
+        assert re.search(b'{"ep":.*,"lt":', output) is not None
