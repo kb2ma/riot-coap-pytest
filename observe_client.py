@@ -75,6 +75,8 @@ async def main(host):
     print('First response: %s\n%r'%(resp, resp.payload))
 
     async for resp in req.observation:
+        # We expect some other process to send another request, which generates
+        # an observe notification.
         print('Next result: %s\n%r'%(resp, resp.payload))
 
         req.observation.cancel()
