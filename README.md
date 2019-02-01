@@ -37,17 +37,17 @@ Setup
 The network/board interfaces used for tests have evolved over time. The table below show the currently supported setups.
 
 
-|       Test       |     Endpoints      | Client | Notes |
-| ---------------- | ------------------ | ------ | ----- |
-| block1           | native2os          | nanocoap | Must run only test_block1_buf |
-| block1           | native2native      | gcoap | gcoap client uses code not merged yet into RIOT master|
-| block2           | native2os          | nanocoap | |
-| con_retry        | native2os          | gcoap | |
-| cord_ep          | native2os, slip2os | gcoap | |
-| cord_epsim       | native2os, slip2os | gcoap | |
-| observe          | native2os, slip2os | gcoap | |
-| request_response | native2os          | nanocoap, gcoap | |
-| request_response | slip2os            | gcoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
+|       Test       |     Endpoints      |      SUT        |  Tools  | Notes |
+| ---------------- | ------------------ | --------------- | ------- | ----- |
+| block1           | native2os          | nanocoap_server | aiocoap | Must run only test_block1_buf for now |
+| block1           | native2native      | gcoap-block     | aiocoap | gcoap-block uses code not merged yet into RIOT master |
+| block2           | native2os          | nanocoap_server | aiocoap | |
+| con_retry        | native2os          | gcoap           | aiocoap | |
+| cord_ep          | native2os, slip2os | cord_ep(gcoap)  | aiocoap | |
+| cord_epsim       | native2os, slip2os | cord_epsim(gcoap) | aiocoap, libcoap | |
+| observe          | native2os, slip2os | gcoap           | aiocoap | |
+| request_response | native2os          | nanocoap_cli, gcoap | libcoap, aiocoap | |
+| request_response | slip2os            | gcoap           | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
 Each test named above is implemented in the file **[name]_test.py**.
 
