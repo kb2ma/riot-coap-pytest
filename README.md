@@ -9,30 +9,28 @@ Materials
 
 In addition to pytest, you'll need a recent copy of these projects:
 
-* [aiocoap](https://github.com/chrysn/aiocoap) -- must install linkheader Python package; see the *Slimmer installations* portion of aiocoap docs
-* [libcoap](https://github.com/obgm/libcoap)
-* [soscoap](https://github.com/kb2ma/soscoap)
-* [riot-apps](https://github.com/kb2ma/riot-apps) -- forked from RIOT-OS/applications; use kb2ma-master branch
-
+|  Project  | Notes |
+| --------- | ----- |
+| [aiocoap](https://github.com/chrysn/aiocoap) | must install linkheader Python package; see the *Slimmer installations* portion of aiocoap docs |
+| [libcoap](https://github.com/obgm/libcoap) | |
+| [soscoap](https://github.com/kb2ma/soscoap) | |
+[riot-apps](https://github.com/kb2ma/riot-apps) | forked from RIOT-OS/applications; use kb2ma-master branch |
 
 The _Setup_ section below assumes these projects are installed in source code form, not with pip or setup.py.
 
-RIOT Examples
--------------
-These tests use the following RIOT examples, which must be precompiled:
+RIOT Tools
+----------
+These tests use the following RIOT based tools, which must be precompiled:
 
-* gcoap
-* nanocoap_server
-* cord_ep
-* cord_epsim -- for native2os endpoints, when compile, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local
+|       Tool      |   Location | Notes |
+| --------------- | ---------- | ----- |
+| gcoap           | examples   |       |
+| nanocoap_server | examples   |       |
+| cord_ep         | examples   |       |
+| cord_epsim      | examples   | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
+| nanocoap_cli    | tests      |       |
+| gcoap-block     | riot-apps  |       |
 
-These tests also use the following RIOT tests, which must be precompiled:
-
-* nanocoap_cli
-
-These tests also use the following RIOT apps, which must be precompiled:
-
-* gcoap-block
 
 Setup
 =====
