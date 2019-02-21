@@ -30,6 +30,8 @@ These tests use the following RIOT based tools, which must be precompiled:
 | cord_epsim         | examples   | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
 | nanocoap_cli       | tests      |       |
 | gcoap-block-server | riot-apps  |       |
+| gcoap-block-client | riot-apps  |       |
+| nano-block-client  | riot-apps  |       |
 
 
 Setup
@@ -39,9 +41,10 @@ The network/board interfaces used for tests have evolved over time. The table be
 
 |       Test       |     Endpoints      |      SUT           |  Tools  | Notes |
 | ---------------- | ------------------ | ------------------ | ------- | ----- |
-| block1           | native2os          | nanocoap_server, gcoap-block-server | aiocoap | |
-| block2           | native2os          | nanocoap_server, gcoap-block-server    | aiocoap | |
-| block2           | native2native      | nano-block-client  | gcoap-block | |
+| block1_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | |
+| block2_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | |
+| block1_client    | native2native      | nano-block-client, gcoap-block-client | gcoap-block-server | |
+| block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | |
 | con_retry        | native2os          | gcoap              | aiocoap | |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    | aiocoap | |
 | cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | aiocoap, libcoap | |

@@ -26,11 +26,12 @@ class ExpectHost():
     2. run() to start and run the process to completion with no interaction.
     """
 
-    def __init__(self, folder, term_cmd, timeout=10):
-        self.folder = folder
-        self.term = None
+    def __init__(self, folder, term_cmd, env={}, timeout=10):
+        self.folder   = folder
+        self.term     = None
         self.term_cmd = term_cmd
-        self.timeout = timeout
+        self.timeout  = timeout
+        self.env      = env
 
     def connect(self):
         """
@@ -42,7 +43,7 @@ class ExpectHost():
             os.chdir(self.folder)
         
         self.term = pexpect.spawnu(self.term_cmd, codec_errors='replace',
-                                  timeout=self.timeout)
+                                  timeout=self.timeout, env=self.env)
         return self.term
 
     def run(self):
