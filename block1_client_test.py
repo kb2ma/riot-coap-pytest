@@ -5,7 +5,7 @@
 # directory for more details.
 
 """
-Tests GETting a large payload from gcoap via block2.
+Tests POSTing a large payload to gcoap via block1.
 """
 
 import pytest
@@ -76,19 +76,38 @@ def nano_block_client():
     # teardown
     host.disconnect()
 
+
+@pytest.fixture
+def gcoap_block_client():
+    """
+    Provides an ExpectHost that runs the nanocoap block client app.
+    """
+    base_folder = os.environ.get('RIOTAPPSBASE', None)
+
+    host = ExpectHost(os.path.join(base_folder, 'gcoap-block-client'), 'make term')
+    term = host.connect()
+    term.expect('gcoap block client')
+
+    # set ULA
+    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64','success:')
+
+    yield host
+
+    # teardown
+    host.disconnect()
+
 #
 # tests
 #
 
-def test_block2_pkt(gcoap_example, block_server, block_size, is_confirm):
-    """Handle block2 server response for Packet API based client. Tests
-    confirmable and non-confirmable request.
-    """
-    cmd_text = 'coap get {0} fd00:bbbb::1 5683 /riot/ver'
-    gcoap_example.send_recv(cmd_text.format('-c' if is_confirm else ''),
-                            r'This is RIOT \(Ve.*blockwise complete')
-
-def test_block2_buf(nano_block_client, block_server, block_size):
+def test_block1_buf(nano_block_client, block_server, block_size):
     """Handle block2 server response for Packet API based client."""
-    nano_block_client.send_recv('get fd00:bbbb::1 5683',
-                                r'This is RIOT \(Ve.*native MCU.')
+    signature = 'C496DF5946783990BEC5EFDC2999530EEB9175B83094BAE66170FF2431FC896E'
+
+    nano_block_client.send_recv('post fd00:bbbb::1 5683', signature)
+
+def test_block1_pkt(gcoap_block_client, block_server, block_size):
+    """Handle block2 server response for Packet API based client."""
+    signature = 'C496DF5946783990BEC5EFDC2999530EEB9175B83094BAE66170FF2431FC896E'
+
+    gcoap_block_client.send_recv('coap post fd00:bbbb::1 5683', signature)
