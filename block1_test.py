@@ -27,10 +27,10 @@ def block_size(request):
 
 
 @pytest.fixture
-def struct_block_server():
+def pkt_block_server():
     """
-    Provides a block server that uses struct-based functions to build the
-    response. Used for development testing until merged into RIOT mainline.
+    Provides a block server that uses Packet API functions to build the
+    response.
     """
     base_folder = os.environ.get('RIOTAPPSBASE', None)
     board       = os.environ.get('BOARD', 'native')
@@ -38,7 +38,7 @@ def struct_block_server():
     term_cmd = 'make term'
     term_resp = 'gcoap block handler'
         
-    host = ExpectHost(os.path.join(base_folder, 'gcoap-block'), term_cmd)
+    host = ExpectHost(os.path.join(base_folder, 'gcoap-block-server'), term_cmd)
     term = host.connect()
     term.expect(term_resp)
 
@@ -66,11 +66,11 @@ def run_block1(server_addr, block_size):
     assert re.search(signature, output)
 
 def test_block1_buf(nanocoap_server, block_size):
-    """Handle block1 request for buffer-based server."""
+    """Handle block1 request for Buffer API based server."""
     address = os.environ.get('TAP_LLADDR_SUT', None)
     run_block1(address, block_size)
 
-def test_block1_struct(struct_block_server, block_size):
-    """Handle block1 request for struct-based server."""
+def test_block1_pkt(pkt_block_server, block_size):
+    """Handle block1 request for Packet API based server."""
     server_addr = 'fd00:bbbb::2'
     run_block1(server_addr, block_size)

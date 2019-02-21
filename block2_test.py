@@ -25,13 +25,37 @@ def block_size(request):
     """Provides the size of the block to test."""
     return request.param
 
+
+@pytest.fixture
+def pkt_block_server():
+    """
+    Provides a block server that uses Packet API functions to build the
+    response.
+    """
+    base_folder = os.environ.get('RIOTAPPSBASE', None)
+    board       = os.environ.get('BOARD', 'native')
+
+    term_cmd = 'make term'
+    term_resp = 'gcoap block handler'
+        
+    host = ExpectHost(os.path.join(base_folder, 'gcoap-block-server'), term_cmd)
+    term = host.connect()
+    term.expect(term_resp)
+
+    # set ULA
+    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64','success:')
+
+    yield host
+
+    # teardown
+    host.disconnect()
+
 #
 # tests
 #
 
-def test_block2(nanocoap_server, block_size):
-    """Verify response from block2_client."""
-    address = os.environ.get('TAP_LLADDR_SUT', None)
+def run_block2(address, block_size):
+    """Runs block2 test"""
     response = b'This is RIOT \\(Version'
 
     host = ExpectHost(pwd, './block2_client.py -r [{0}] -b {1}'.format(address, block_size))
@@ -39,3 +63,13 @@ def test_block2(nanocoap_server, block_size):
     output = host.run()
     assert re.search(b'2.05 Content', output)
     assert re.search(response, output)
+
+def test_block2_buf(nanocoap_server, block_size):
+    """Handle block2 request for Buffer API based server."""
+    address = os.environ.get('TAP_LLADDR_SUT', None)
+    run_block2(address, block_size)
+
+def test_block2_pkt(pkt_block_server, block_size):
+    """Handle block2 request for Packet API based server."""
+    server_addr = 'fd00:bbbb::2'
+    run_block2(server_addr, block_size)
