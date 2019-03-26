@@ -108,10 +108,18 @@ The _make term_ step below initializes addressing and routing on the Linux host 
 
 For this node, we specify the address of the wireless interface on the fd00:aaaa::/64 network. Then we initialize the node as RPL root.
 
+As mentioned below, ethos sets up border routing. By default, it defines fd00:dead:beef:: as the network on the wired/cloud side. You must manually update `dist/tools/ethos/start_network.sh` to use a different address for the network.
+
+Reminder for samr21-xpro: a udev rule is required for an unprivileged user to flash this board. See `boards/samr21-xpro/doc.txt`.
+
 ```
     $ BOARD="samr21-xpro" make clean all flash
+
+    # This step uses ethos to automatically set up border routing. The terminal
+    # is available for command input/output.
     $ BOARD="samr21-xpro" IPV6_PREFIX="fd00:aaaa::/64" PORT="/dev/ttyACM0" make term
-    
+
+    # Manually setting address is a convenience so don't have to search for it.
     > ifconfig 6 add unicast fd00:aaaa::1/64
     > rpl init 6
     > rpl root 1 fd00:aaaa::1
@@ -120,7 +128,7 @@ For this node, we specify the address of the wireless interface on the fd00:aaaa
 
 **RPL leaf node**
 
-After setting up the RPL root node, just initialize rpl for the leaf node.
+After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network to use.
 
 ```
     $ BOARD="samr21-xpro" make clean all flash
