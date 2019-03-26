@@ -34,7 +34,7 @@ def cord_cli():
 
     host = ExpectHost(os.path.join(base_folder, 'examples/cord_epsim'), 'make term')
     term = host.connect()
-    term.expect('CoAP simplified RD registration example!')
+    term.expect('Simplified CoRE RD registration example')
     yield host
 
     # teardown
@@ -81,12 +81,22 @@ def request_path():
 
 def test_run(rd_server, cord_cli):
     """Test expected output after connection to rd server"""
-    # must read to end of output from startup; we don't expect anything further
-    cord_cli.term.expect('lt:.*$')
+    # must read to end of output from startup
+    cord_cli.term.expect('RD address:.*$')
 
-    # not expecting any output to CLI
+    # attempting to re-register
+    cord_cli.term.expect('updating registration with RD.*$', 60)
+
+    # not expecting warning, which indicates failed to contact server
     with pytest.raises(pexpect.TIMEOUT):
-        cord_cli.term.expect('.', 60)
+        cord_cli.term.expect('warning: registration already in progress', 60)
+
+def test_no_server(cord_cli):
+    """Test expected failure when no rd server"""
+    # must read to end of output from startup
+    cord_cli.term.expect('RD address:.*$')
+
+    cord_cli.term.expect('warning: registration already in progress', 60)
 
 @pytest.mark.parametrize('request_path', ['/riot/foo', '/riot/info'])
 def test_server(cord_cli, libcoap_client, request_path):
