@@ -104,18 +104,23 @@ This setup allows use of a physical board via RPL to a Linux host. This setup re
 
 **RPL root node**
 
-The _make term_ step below initializes addressing and routing on the Linux host before starting the terminal.
-
 For this node, we specify the address of the wireless interface on the fd00:aaaa::/64 network. Then we initialize the node as RPL root.
+
+**NOTE** The _make term_ step below includes initialization of the address and routing on the Linux host, and then starts the terminal.
+
+This setup is based on the gnrc_border_router example. First, ensure that the gnrc_rpl module is included in the Makefile.
 
 As mentioned below, ethos sets up border routing. By default, it defines fd00:dead:beef:: as the network on the wired/cloud side. You must manually update `dist/tools/ethos/start_network.sh` to use a different address for the network.
 
 Reminder for samr21-xpro: a udev rule is required for an unprivileged user to flash this board. See `boards/samr21-xpro/doc.txt`.
 
 ```
-    $ BOARD="samr21-xpro" make clean all flash
+    # To determine serial port, if more than one board attached
+    $ ../../dist/tools/usb-serial/list-ttys.sh
 
-    # This step uses ethos to automatically set up border routing. The terminal
+    $ BOARD="samr21-xpro" make clean all flash SERIAL="???"
+
+    # This step automatically starts ethos to set up border routing. The terminal
     # is available for command input/output.
     $ BOARD="samr21-xpro" IPV6_PREFIX="fd00:aaaa::/64" PORT="/dev/ttyACM0" make term
 
@@ -128,10 +133,10 @@ Reminder for samr21-xpro: a udev rule is required for an unprivileged user to fl
 
 **RPL leaf node**
 
-After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network to use.
+After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network t SERIAL="???"o use.
 
 ```
-    $ BOARD="samr21-xpro" make clean all flash
+    $ BOARD="samr21-xpro" make clean all flash SERIAL="???"
     $ BOARD="samr21-xpro" PORT="/dev/ttyACM1" make term
 
     > rpl init 6
