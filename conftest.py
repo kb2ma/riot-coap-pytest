@@ -43,7 +43,7 @@ class ExpectHost():
             os.chdir(self.folder)
         
         self.term = pexpect.spawnu(self.term_cmd, codec_errors='replace',
-                                  timeout=self.timeout, env=self.env)
+                                  timeout=self.timeout)
         return self.term
 
     def run(self):
