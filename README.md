@@ -133,7 +133,7 @@ Reminder for samr21-xpro: a udev rule is required for an unprivileged user to fl
 
 **RPL leaf node**
 
-After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network t SERIAL="???"o use.
+After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network to use.
 
 ```
     # May encounter an issue with pyterm unable to find serial module.
