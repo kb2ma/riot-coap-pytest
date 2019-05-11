@@ -136,10 +136,15 @@ Reminder for samr21-xpro: a udev rule is required for an unprivileged user to fl
 After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network t SERIAL="???"o use.
 
 ```
+    # May encounter an issue with pyterm unable to find serial module.
+    # If so, change #! command in pyterm module to use python3
     $ BOARD="samr21-xpro" make clean all flash SERIAL="???"
     $ BOARD="samr21-xpro" PORT="/dev/ttyACM1" make term
 
+    # Interface number may differ
     > rpl init 6
+    # Use the fd00:aaaa::/64 address from this command
+    > ifconfig
 ```
 
 
