@@ -133,6 +133,8 @@ Reminder for samr21-xpro: a udev rule is required for an unprivileged user to fl
 
 **RPL leaf node**
 
+First, ensure that the gnrc_rpl module is included in the Makefile.
+
 After setting up the RPL root node, just initialize rpl for the leaf node. RPL decides the address on the fd00:aaaa::/64 network to use.
 
 ```
