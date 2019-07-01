@@ -107,6 +107,6 @@ def test_server(cord_cli, libcoap_client, request_path):
     if request_path == '/sense/temp':
         assert re.search(b'23', output) is not None
     elif request_path == '/node/info':
-        assert re.search(b'INFOMRATION', output) is not None
+        assert re.search(b'INFORMATION', output) is not None
     else:
         pytest.fail('unknown request_path')
