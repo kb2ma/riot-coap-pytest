@@ -22,16 +22,16 @@ RIOT Tools
 ----------
 These tests use the following RIOT based tools, which must be precompiled:
 
-|        Tool        |  Location  | Notes |
-| ------------------ | ---------- | ----- |
-| gcoap              | examples   |       |
-| nanocoap_server    | examples   |       |
-| cord_ep            | examples   |       |
-| cord_epsim         | examples   | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
-| nanocoap_cli       | tests      |       |
-| gcoap-block-server | riot-apps  |       |
-| gcoap-block-client | riot-apps  |       |
-| nano-block-client  | riot-apps  |       |
+|        Tool        |  Location  |    Status     | Notes |
+| ------------------ | ---------- | ------------- | ----- |
+| gcoap              | examples   |               |       |
+| nanocoap_server    | examples   |               |       |
+| cord_ep            | examples   | 2019-07-01 OK |       |
+| cord_epsim         | examples   | 2019-07-01 OK | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
+| nanocoap_cli       | tests      |               |       |
+| gcoap-block-server | riot-apps  |               |       |
+| gcoap-block-client | riot-apps  |               |       |
+| nano-block-client  | riot-apps  |               |       |
 
 
 Setup
@@ -118,7 +118,7 @@ Reminder for samr21-xpro: a udev rule is required for an unprivileged user to fl
     # To determine serial port, if more than one board attached
     $ ../../dist/tools/usb-serial/list-ttys.sh
 
-    $ BOARD="samr21-xpro" make clean all flash SERIAL="???"
+    $ BOARD="samr21-xpro" make clean all flash SERIAL="<serial-number>"
 
     # This step automatically starts ethos to set up border routing. The terminal
     # is available for command input/output.
