@@ -22,16 +22,16 @@ RIOT Tools
 ----------
 These tests use the following RIOT based tools, which must be precompiled:
 
-|        Tool        |  Location  |    Status     | Notes |
-| ------------------ | ---------- | ------------- | ----- |
-| gcoap              | examples   |               |       |
-| nanocoap_server    | examples   |               |       |
-| cord_ep            | examples   | 2019-07-01 OK |       |
-| cord_epsim         | examples   | 2019-07-01 OK | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
-| nanocoap_cli       | tests      |               |       |
-| gcoap-block-server | riot-apps  |               |       |
-| gcoap-block-client | riot-apps  |               |       |
-| nano-block-client  | riot-apps  |               |       |
+|        Tool        |  Location  | Notes |
+| ------------------ | ---------- | ----- |
+| gcoap              | examples   |       |
+| nanocoap_server    | examples   |       |
+| cord_ep            | examples   |       |
+| cord_epsim         | examples   | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
+| nanocoap_cli       | tests      |       |
+| gcoap-block-server | riot-apps  |       |
+| gcoap-block-client | riot-apps  |       |
+| nano-block-client  | riot-apps  |       |
 
 
 Setup
@@ -46,10 +46,10 @@ The network/board interfaces used for tests have evolved over time. The table be
 | block1_client    | native2native      | nano-block-client, gcoap-block-client | gcoap-block-server | |
 | block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | |
 | con_retry        | native2os          | gcoap              | aiocoap | |
-| cord_ep          | native2os, slip2os | cord_ep (gcoap)    | aiocoap | |
-| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | aiocoap, libcoap | |
+| cord_ep          | native2os, slip2os | cord_ep (gcoap)    | aiocoap | 2019-07-01 OK |
+| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | aiocoap, libcoap | 2019-07-01 OK |
 | observe          | native2os, slip2os | gcoap              | aiocoap | |
-| request_response | native2os          | nanocoap_cli, gcoap | libcoap, aiocoap | |
+| request_response | native2os          | nanocoap_cli, gcoap | libcoap, aiocoap | 2019-07-22 OK |
 | request_response | slip2os            | gcoap              | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
 Each test named above is implemented in the file **[name]_test.py**.
