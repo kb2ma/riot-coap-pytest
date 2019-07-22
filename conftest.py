@@ -141,6 +141,19 @@ def nanocoap_cli():
     # teardown
     host.disconnect()
 
+
+@pytest.fixture
+def libcoap_client(request_path):
+    """Runs a libcoap example client as an ExpectHost to retrieve a response."""
+    folder = os.environ.get('LIBCOAP_BASE', None)
+    cmd_folder = folder + '/examples/' if folder else ''
+
+    cmd = '{0}coap-client -N -m get -T 5a -U coap://[fd00:bbbb::2]{1}'
+    cmd_text = cmd.format(cmd_folder, request_path)
+
+    host = ExpectHost(folder, cmd_text)
+    yield host
+
 #
 # hooks
 #
