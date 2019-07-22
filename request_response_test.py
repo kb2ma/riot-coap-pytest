@@ -115,6 +115,8 @@ def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
 
 def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client):
     """
+    Tests gcoap concurrently sending and receiving messages.
+
     Client: repeats simple non-confirmable request from gcoap
     Server: repeats simple confirmable request to gcoap
     """
