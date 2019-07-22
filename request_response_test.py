@@ -93,6 +93,15 @@ def test_client_get(libcoap_server, gcoap_example):
     send_recv(gcoap_example, False)
     send_recv(gcoap_example, True)
 
+@pytest.mark.parametrize('request_path', ['/xyz'])
+def test_server_no_resource(gcoap_example, libcoap_client, request_path):
+    """Verify response when no matching resource.
+
+       This test is more about resources rather than request/response, but
+       putting it here as a first step."""
+    output = libcoap_client.run()
+    assert re.search(b'4.04', output) is not None
+
 def test_client_get_nano(libcoap_server, nanocoap_cli):
     """Single, simple GET request, confirmable only. nanocoap_cli does not
        support non-confirmable requests."""
