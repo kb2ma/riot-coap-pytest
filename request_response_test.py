@@ -94,7 +94,8 @@ def test_client_get(libcoap_server, gcoap_example):
     send_recv(gcoap_example, True)
 
 def test_client_get_nano(libcoap_server, nanocoap_cli):
-    """Single, simple GET request, non-confirmable and confirmable"""
+    """Single, simple GET request, confirmable only. nanocoap_cli does not
+       support non-confirmable requests."""
     board = os.environ.get('BOARD', 'native')
     addr  = None
 
