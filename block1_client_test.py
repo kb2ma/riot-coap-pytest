@@ -44,7 +44,7 @@ def block_server():
     term_resp = 'gcoap block handler'
         
     host = ExpectHost(os.path.join(base_folder, 'gcoap-block-server'), term_cmd,
-                      env={'PORT':'tap1'})
+                      putenv={'PORT':'tap1'})
     term = host.connect()
     term.expect(term_resp)
 

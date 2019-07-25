@@ -26,12 +26,16 @@ class ExpectHost():
     2. run() to start and run the process to completion with no interaction.
     """
 
-    def __init__(self, folder, term_cmd, env={}, timeout=10):
+    def __init__(self, folder, term_cmd, putenv={}, timeout=10):
+        """
+        :putenv: Additional entries for os.environ dictionary to pass to
+                 spawned process
+        """
         self.folder   = folder
         self.term     = None
         self.term_cmd = term_cmd
         self.timeout  = timeout
-        self.env      = env
+        self.putenv   = putenv
 
     def connect(self):
         """
@@ -41,9 +45,9 @@ class ExpectHost():
         """
         if self.folder:
             os.chdir(self.folder)
-        
-        self.term = pexpect.spawnu(self.term_cmd, codec_errors='replace',
-                                  timeout=self.timeout)
+
+        self.term = pexpect.spawnu(self.term_cmd, timeout=self.timeout,
+                                   env=self._build_env(), codec_errors='replace')
         return self.term
 
     def run(self):
@@ -54,7 +58,7 @@ class ExpectHost():
         """
         if self.folder:
             os.chdir(self.folder)
-        return pexpect.run(self.term_cmd)
+        return pexpect.run(self.term_cmd, env=self._build_env())
 
     def disconnect(self):
         """Kill OS host process"""
@@ -68,6 +72,15 @@ class ExpectHost():
            response."""
         self.term.sendline(out_text)
         self.term.expect(in_text, self.timeout)
+
+    def _build_env(self):
+        """Builds full os.environ dictionary if putenv instance variable has
+           been defined."""
+        env = None
+        if self.putenv:
+            env = os.environ.copy()
+            env.update(self.putenv)
+        return env
 
 
 @pytest.fixture
