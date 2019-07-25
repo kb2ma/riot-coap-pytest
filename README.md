@@ -41,10 +41,10 @@ The network/board interfaces used for tests have evolved over time. The table be
 
 |       Test       |     Endpoints      |      SUT           |  Tools  | Notes |
 | ---------------- | ------------------ | ------------------ | ------- | ----- |
-| block1_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | |
-| block2_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | |
+| block1_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-22 OK, nanocoap |
+| block2_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-22 OK, nanocoap |
 | block1_client    | native2native      | nano-block-client, gcoap-block-client | gcoap-block-server | |
-| block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | |
+| block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | 2019-07-22 OK, gcoap |
 | con_retry        | native2os          | gcoap              | aiocoap | |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    | aiocoap | 2019-07-01 OK |
 | cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | aiocoap, libcoap | 2019-07-01 OK |
