@@ -41,15 +41,15 @@ The network/board interfaces used for tests have evolved over time. The table be
 
 |       Test       |     Endpoints      |      SUT           |  Tools  | Notes |
 | ---------------- | ------------------ | ------------------ | ------- | ----- |
-| block1_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-22 OK, nanocoap |
-| block2_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-22 OK, nanocoap |
-| block1_client    | native2native      | nano-block-client, gcoap-block-client | gcoap-block-server | |
-| block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | 2019-07-22 OK, gcoap |
-| con_retry        | native2os          | gcoap              | aiocoap | |
+| block1_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-24 OK |
+| block2_server    | native2os          | nanocoap_server, gcoap-block-server | aiocoap | 2019-07-24 OK |
+| block1_client    | native2native      | nano-block-client, gcoap-block-client | gcoap-block-server | 2019-07-24 OK |
+| block2_client    | native2native      | nano-block-client, gcoap | gcoap-block-server | 2019-07-24 OK |
+| con_retry        | native2os          | gcoap              | aiocoap | 2019-07-24 OK |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    | aiocoap | 2019-07-01 OK |
 | cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | aiocoap, libcoap | 2019-07-01 OK |
 | observe          | native2os, slip2os | gcoap              | aiocoap | |
-| request_response | native2os          | nanocoap_cli, gcoap | libcoap, aiocoap | 2019-07-22 OK |
+| request_response | native2os          | nanocoap_cli, gcoap | libcoap, aiocoap | 2019-07-24 OK |
 | request_response | slip2os            | gcoap              | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
 Each test named above is implemented in the file **[name]_test.py**.
