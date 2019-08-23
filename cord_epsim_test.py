@@ -58,7 +58,10 @@ def rd_server():
 
 @pytest.fixture
 def libcoap_client(request_path):
-    """Runs a libcoap example client as an ExpectHost to retrieve a response."""
+    """Runs a libcoap example client as an ExpectHost to retrieve a response.
+       Overrides fixture with the same name in conftest.py to allow
+       specification of address.
+    """
     folder = os.environ.get('LIBCOAP_BASE', None)
     cmd_folder = folder + '/examples/' if folder else ''
     addr   = os.environ.get('TAP_LLADDR_SUT', None)
