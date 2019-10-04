@@ -58,6 +58,8 @@ native2os
 ---------
 Some of these tests use a tap interface to communicate between a native RIOT instance and the Linux desktop. They require an fd00:bbbb::/64 ULA-based network defined on the desktop as:
 ```
+    $ sudo ip tuntap add tap0 mode tap user ${USER}
+    $ sudo ip link set tap0 up
     $ sudo ip address add fd00:bbbb::1/64 dev tap0 scope global
 ```
 
