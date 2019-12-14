@@ -82,6 +82,16 @@ class ExpectHost():
             env.update(self.putenv)
         return env
 
+# Protocol level parameters -- DTLS vs. UDP
+proto_params = {}
+if (os.environ.get('TRANSPORT_PROTOCOL', 'UDP') == 'DTLS'):
+    proto_params['is_dtls'] = True
+    proto_params['port'] = 5684
+    proto_params['psk_key'] = 'secretPSK'
+else:
+    proto_params['is_dtls'] = False
+    proto_params['port'] = 5683
+
 
 @pytest.fixture
 def gcoap_example():
@@ -105,7 +115,8 @@ def gcoap_example():
 
     # set ULA
     if board == 'native':
-        host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64',
+        pid = '5' if proto_params['is_dtls'] else '6'
+        host.send_recv('ifconfig {0} add unicast fd00:bbbb::2/64'.format(pid),
                        'success:')
     else:
         host.send_recv('ifconfig 8 add unicast fd00:bbbb::2/64',

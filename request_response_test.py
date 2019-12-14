@@ -17,6 +17,7 @@ import time
 
 from collections import Counter
 from conftest import ExpectHost
+from conftest import proto_params
 
 pwd = os.getcwd()
 logging.basicConfig(level=logging.INFO)
@@ -30,10 +31,12 @@ def libcoap_server(request):
     """Runs a libcoap example server process, and provides a pexpect spawn
        object to interact with it."""
     folder = os.environ.get('LIBCOAP_BASE', None)
-    if folder:
-        cmd = os.path.join('examples/coap-server')
+    if proto_params['is_dtls']:
+        dtls_arg = '-k {0}'.format(proto_params['psk_key'])
     else:
-        cmd = 'coap-server'
+        dtls_arg = ''
+
+    cmd = '{0}coap-server {1}'.format('examples/' if folder else '', dtls_arg)
 
     host = ExpectHost(folder, cmd)
     term = host.connect()
@@ -70,8 +73,9 @@ def send_recv(client, is_confirm):
     :param boolean is_confirm: True if confirmable message
     """
     # expect like 'Nov 04 11:21:58'
-    client.send_recv('coap get {0} fd00:bbbb::1 5683 /time'.format('-c' if is_confirm else ''),
-                     r'\w+ \w+ \d+:\d+:')
+    cmdText = 'coap get {0} fd00:bbbb::1 {1} /time'.format('-c' if is_confirm else '',
+                                                            proto_params['port'])
+    client.send_recv(cmdText, r'\w+ \w+ \d+:\d+:')
 
 def send_recv_nano(client, server_addr):
     """
