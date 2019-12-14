@@ -88,6 +88,7 @@ if (os.environ.get('TRANSPORT_PROTOCOL', 'UDP') == 'DTLS'):
     proto_params['is_dtls'] = True
     proto_params['port'] = 5684
     proto_params['psk_key'] = 'secretPSK'
+    proto_params['psk_id'] = 'Client_identity'
 else:
     proto_params['is_dtls'] = False
     proto_params['port'] = 5683
@@ -171,9 +172,14 @@ def libcoap_client(request_path):
     """Runs a libcoap example client as an ExpectHost to retrieve a response."""
     folder = os.environ.get('LIBCOAP_BASE', None)
     cmd_folder = folder + '/examples/' if folder else ''
+    if proto_params['is_dtls']:
+        dtls_arg = '-k {0} -u {1}'.format(proto_params['psk_key'],
+                                          proto_params['psk_id'])
+    else:
+        dtls_arg = ''
 
-    cmd = '{0}coap-client -N -m get -T 5a -U coap://[fd00:bbbb::2]{1}'
-    cmd_text = cmd.format(cmd_folder, request_path)
+    cmd = '{0}coap-client {1} -N -m get -T 5a -U coaps://[fd00:bbbb::2]{2}'
+    cmd_text = cmd.format(cmd_folder, dtls_arg, request_path)
 
     host = ExpectHost(folder, cmd_text)
     yield host
