@@ -86,11 +86,13 @@ class ExpectHost():
 proto_params = {}
 if (os.environ.get('TRANSPORT_PROTOCOL', 'UDP') == 'DTLS'):
     proto_params['is_dtls'] = True
+    proto_params['uri_proto'] = 'coaps'
     proto_params['port'] = 5684
     proto_params['psk_key'] = 'secretPSK'
     proto_params['psk_id'] = 'Client_identity'
 else:
     proto_params['is_dtls'] = False
+    proto_params['uri_proto'] = 'coap'
     proto_params['port'] = 5683
 
 
@@ -175,13 +177,11 @@ def libcoap_client(request_path):
     if proto_params['is_dtls']:
         dtls_arg = '-k {0} -u {1}'.format(proto_params['psk_key'],
                                           proto_params['psk_id'])
-        proto_arg = 'coaps'
     else:
         dtls_arg = ''
-        proto_arg = 'coap'
 
     cmd = '{0}coap-client {1} -N -m get -T 5a -U {2}://[fd00:bbbb::2]{3}'
-    cmd_text = cmd.format(cmd_folder, dtls_arg, proto_arg, request_path)
+    cmd_text = cmd.format(cmd_folder, dtls_arg, proto_params['uri_proto'], request_path)
 
     host = ExpectHost(folder, cmd_text)
     yield host

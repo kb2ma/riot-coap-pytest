@@ -7,16 +7,33 @@ These tests all were developed using native on a recent Ubuntu Linux. Tests that
 Materials
 =========
 
-In addition to pytest, you'll need a recent copy of these projects:
+In addition to pytest, you'll need a recent copy of aiocoap and the other projects listed below. 
+
+The _Setup_ section below assumes these projects are installed in source code form, not with pip or setup.py. Use your judgement, but notice that some dependent libraries within these projects *are* installed with pip.
+
+
+aiocoap
+-------
+[aiocoap](https://github.com/chrysn/aiocoap) is a Python based CoAP library. Use at least version 0.4b1. Must install packages *linkheader* and *tinydtls*. See the *Slimmer installations* portion of the aiocoap docs.
+
+The tinydtls package actually is an alias for the Python [DTLSSocket](https://git.fslab.de/jkonra2m/tinydtls-cython) library. We require v0.1.11a2, however at time of writing, this version had not been released to PyPI. So, we must install from a source code checkout. The *checkout* command below corresponds to that version.
+
+```
+   $ git clone https://git.fslab.de/jkonra2m/tinydtls-cython.git
+   $ git checkout 6db90d4
+   $ pip3 install .
+```
+
+**Note** The first time I tried to install DTLSSocket, I received an error: "error: unknown file type '.pyx' (from 'DTLSSocket/dtls.pyx')". This filename extension is used by the Cython package, and Cython was installed with the DTLSSocket installation. I uninstalled DTLSSocket, and reinstalled it without an error. So don't despair if you see this error on the first installation of DTLSSocket. :-)
+
+Other projects
+--------------
 
 |  Project  | Notes |
 | --------- | ----- |
-| [aiocoap](https://github.com/chrysn/aiocoap) | must install linkheader Python package; see the *Slimmer installations* portion of aiocoap docs |
-| [libcoap](https://github.com/obgm/libcoap) | |
-| [soscoap](https://github.com/kb2ma/soscoap) | |
-[riot-apps](https://github.com/kb2ma/riot-apps) | forked from RIOT-OS/applications; use kb2ma-master branch |
-
-The _Setup_ section below assumes these projects are installed in source code form, not with pip or setup.py.
+| [libcoap](https://github.com/obgm/libcoap) | C based, embeddable CoAP library, v4.2.1 for compatible tinydtls support. Using example client and server  |
+| [soscoap](https://github.com/kb2ma/soscoap) | Python CoAP library |
+[riot-apps](https://github.com/kb2ma/riot-apps) | forked from RIOT-OS/applications, use *kb2ma-master* branch; using blockwise test apps |
 
 RIOT Tools
 ----------

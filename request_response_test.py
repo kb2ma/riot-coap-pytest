@@ -49,7 +49,8 @@ def libcoap_server(request):
 def aiocoap_client():
     """Runs an aiocoap client to query gcoap_example as a server."""
     # server handles same quantity of messages as client sends
-    cmd = './repeat_send_client.py -r [fd00:bbbb::2] -p /cli/stats -q {0}'.format(10)
+    cmdText = './repeat_send_client.py -r [fd00:bbbb::2] -p /cli/stats -q {0} {1}'
+    cmd = cmdText.format(10, '-c dtls-credentials.json' if proto_params['is_dtls'] else '')
 
     host = ExpectHost(pwd, cmd)
     term = host.connect()
@@ -134,9 +135,9 @@ def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client
     Server: repeats simple confirmable request to gcoap
     """
     # gcoap client
-    for i in range(qty_repeat):
-        send_recv(gcoap_example, False)
-        time.sleep(1)
+    #for i in range(qty_repeat):
+    #    send_recv(gcoap_example, False)
+    #    time.sleep(1)
 
     # wait for server to finish
     while aiocoap_client.term.isalive():

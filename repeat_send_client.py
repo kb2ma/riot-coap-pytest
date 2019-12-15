@@ -12,24 +12,30 @@ may be validated. Waits two seconds between sends.
 Expected result:
 
 Usage:
-    usage: repeat_send_client.py [-h] -r HOST
+    usage: repeat_send_client.py [-c FILE] -r HOST -p PATH -q QTY
+    usage: repeat_send_client.py -h
 
     optional arguments:
       -h, --help     show this help message and exit
+      -p PATH        path for URI
       -r HOST        remote host for URI
       -q QTY         quantity of messages to handle
+      -c FILE        DTLS credentials file, name format: *.json
 
 Example:
 
-$ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -r [fd00:bbbb::2] -q 10
+$ PYTHONPATH="/home/kbee/src/aiocoap" ./repeat_send_client.py -p /cli/stats -r [fd00:bbbb::2] -q 10
 """
 
 import asyncio
 import contextlib
+import json
 import logging
 import os
 from argparse import ArgumentParser
 from aiocoap import *
+from conftest import proto_params
+from pathlib import Path
 
 logfile = 'repeat_send_client.log'
 with contextlib.suppress(FileNotFoundError):
@@ -37,12 +43,15 @@ with contextlib.suppress(FileNotFoundError):
 
 logging.basicConfig(level=logging.INFO, filename=logfile)
 
-async def main(host, path, qty):
+async def main(host, path, qty, credentialsFile=None):
     context = await Context.create_client_context()
+    if proto_params['is_dtls']:
+        context.client_credentials.load_from_dict(json.load(credentialsFile.open('rb')))
 
     for i in range(qty):
         await asyncio.sleep(2)
-        request = Message(code=GET, uri='coap://{0}{1}'.format(host, path))
+        request = Message(code=GET, uri='{0}://{1}{2}'.format(proto_params['uri_proto'],
+                                                              host, path))
         response = await context.request(request).response
 
         logging.info('Result: %s\n%r'%(response.code, response.payload))
@@ -57,7 +66,10 @@ if __name__ == "__main__":
                         help='URI path for resource')
     parser.add_argument('-q', dest='qty', type=int, required=True,
                         help='quantity of messages to handle')
+    parser.add_argument('-c', dest='credentialsFile', type=Path,
+                        help='DTLS credentials file, name format: *.json')
 
     args = parser.parse_args()
 
-    asyncio.get_event_loop().run_until_complete(main(args.host, args.path, args.qty))
+    asyncio.get_event_loop().run_until_complete(main(args.host, args.path, args.qty,
+                                                     args.credentialsFile))
