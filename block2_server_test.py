@@ -13,6 +13,7 @@ import os
 import re
 
 from conftest import ExpectHost
+from conftest import proto_params
 
 pwd = os.getcwd()
 
@@ -43,7 +44,9 @@ def pkt_block_server():
     term.expect(term_resp)
 
     # set ULA
-    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64','success:')
+    pid = '5' if proto_params['is_dtls'] else '6'
+    cmd = 'ifconfig {0} add unicast fd00:bbbb::2/64'.format(pid)
+    host.send_recv(cmd, 'success:')
 
     yield host
 
@@ -58,7 +61,10 @@ def run_block2(address, block_size):
     """Runs block2 test"""
     response = b'This is RIOT \\(Version'
 
-    host = ExpectHost(pwd, './block2_client.py -r [{0}] -b {1}'.format(address, block_size))
+    cmdText = './block2_client.py -r [{0}] -b {1} {2}'
+    cmd = cmdText.format(address, block_size,
+                         '-c dtls-credentials.json' if proto_params['is_dtls'] else '')
+    host = ExpectHost(pwd, cmd)
 
     output = host.run()
     assert re.search(b'2.05 Content', output)
