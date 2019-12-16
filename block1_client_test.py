@@ -13,6 +13,7 @@ import os
 import re
 
 from conftest import ExpectHost
+from conftest import proto_params
 
 pwd = os.getcwd()
 
@@ -49,7 +50,9 @@ def block_server():
     term.expect(term_resp)
 
     # set ULA
-    host.send_recv('ifconfig 6 add unicast fd00:bbbb::1/64','success:')
+    pid = '5' if proto_params['is_dtls'] else '6'
+    cmd = 'ifconfig {0} add unicast fd00:bbbb::1/64'.format(pid)
+    host.send_recv(cmd, 'success:')
 
     yield host
 
@@ -89,7 +92,9 @@ def gcoap_block_client():
     term.expect('gcoap block client')
 
     # set ULA
-    host.send_recv('ifconfig 6 add unicast fd00:bbbb::2/64','success:')
+    pid = '5' if proto_params['is_dtls'] else '6'
+    cmd = 'ifconfig {0} add unicast fd00:bbbb::2/64'.format(pid)
+    host.send_recv(cmd, 'success:')
 
     yield host
 
@@ -110,4 +115,5 @@ def test_block1_pkt(gcoap_block_client, block_server, block_size):
     """Handle block2 server response for Packet API based client."""
     signature = 'C496DF5946783990BEC5EFDC2999530EEB9175B83094BAE66170FF2431FC896E'
 
-    gcoap_block_client.send_recv('coap post fd00:bbbb::1 5683', signature)
+    cmd = 'coap post fd00:bbbb::1 {0}'.format(proto_params['port'])
+    gcoap_block_client.send_recv(cmd, signature)
