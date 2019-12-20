@@ -64,12 +64,11 @@ The network/board interfaces used for tests have evolved over time. The table be
 | con_retry        | native2os          | gcoap              | (1)  | soscoap | 2019-07-24 OK |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    |   | aiocoap | 2019-07-01 OK |
 | cord_epsim       | native2os, slip2os | cord_epsim (gcoap) |   | aiocoap, libcoap | 2019-07-01 OK |
-| observe          | native2os, slip2os | gcoap              | Y | aiocoap | |
-| request_response | native2os          | nanocoap_cli, gcoap | Y (2)| libcoap, aiocoap | 2019-07-24 OK |
+| observe          | native2os, slip2os | gcoap              | Y | aiocoap | 2019-12-20 OK |
+| request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | 2019-07-24 OK |
 | request_response | slip2os            | gcoap              |   | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
  1. Can't use DTLS with soscoap tool
- 2. As of 2019-12-19 can't run test_client_server() due to limitation of gcoap/DTLS integration.
 
 Each test named above is implemented in the file **[name]_test.py**.
 
