@@ -32,7 +32,6 @@ Other projects
 |  Project  | Notes |
 | --------- | ----- |
 | [libcoap](https://github.com/obgm/libcoap) | C based, embeddable CoAP library, v4.2.1 for compatible tinydtls support. Using example client and server  |
-| [soscoap](https://github.com/kb2ma/soscoap) | Python CoAP library |
 [riot-apps](https://github.com/kb2ma/riot-apps) | forked from RIOT-OS/applications, use *kb2ma-master* branch; using blockwise test apps |
 
 RIOT Tools
@@ -61,14 +60,12 @@ The network/board interfaces used for tests have evolved over time. The table be
 | block2_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | 2019-07-24 OK |
 | block1_client    | native2native      | nano-block-client, gcoap-block-client | Y | gcoap-block-server | 2019-07-24 OK |
 | block2_client    | native2native      | nano-block-client, gcoap| Y | gcoap-block-server  | 2019-07-24 OK |
-| con_retry        | native2os          | gcoap              | (1)  | soscoap | 2019-07-24 OK |
+| con_retry        | native2os          | gcoap              |   | libcoap | 2019-07-24 OK |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    |   | aiocoap | 2019-07-01 OK |
 | cord_epsim       | native2os, slip2os | cord_epsim (gcoap) |   | aiocoap, libcoap | 2019-07-01 OK |
 | observe          | native2os, slip2os | gcoap              | Y | aiocoap | 2019-12-20 OK |
 | request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | 2019-07-24 OK |
 | request_response | slip2os            | gcoap              |   | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
-
- 1. Can't use DTLS with soscoap tool
 
 Each test named above is implemented in the file **[name]_test.py**.
 

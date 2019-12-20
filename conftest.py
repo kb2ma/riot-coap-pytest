@@ -90,10 +90,12 @@ if (os.environ.get('TRANSPORT_PROTOCOL', 'UDP') == 'DTLS'):
     proto_params['port'] = 5684
     proto_params['psk_key'] = 'secretPSK'
     proto_params['psk_id'] = 'Client_identity'
+    proto_params['session_setup_msgs'] = 6
 else:
     proto_params['is_dtls'] = False
     proto_params['uri_proto'] = 'coap'
     proto_params['port'] = 5683
+    proto_params['session_setup_msgs'] = 0
 
 
 @pytest.fixture
@@ -187,11 +189,18 @@ def libcoap_client(request_path):
 
 @pytest.fixture(scope='session')
 def libcoap_port():
-    """Provides default value for libcoap_server fixture parameter"""
+    """Provides default value for libcoap_server fixture port."""
     return '5683'
 
+@pytest.fixture(scope='session')
+def libcoap_ignore_count():
+    """Provides default value for libcoap_server fixture port. This value is
+       the count of requests the server will ignore. This ability is useful
+       for testing confirmable retries."""
+    return 0
+
 @pytest.fixture
-def libcoap_server(libcoap_port):
+def libcoap_server(libcoap_port, libcoap_ignore_count):
     """Runs a libcoap example server process, and provides a pexpect spawn
        object to interact with it."""
     folder = os.environ.get('LIBCOAP_BASE', None)
@@ -199,9 +208,13 @@ def libcoap_server(libcoap_port):
         dtls_arg = '-k {0}'.format(proto_params['psk_key'])
     else:
         dtls_arg = ''
+        
+    ignore_low = 1 + proto_params['session_setup_msgs']
+    ignore_high = libcoap_ignore_count + proto_params['session_setup_msgs']
+    ignore_range_arg = '-l {0}-{1}'.format(ignore_low, ignore_high) if libcoap_ignore_count else ''
 
-    cmd = '{0}coap-server -p {1} {2}'.format('examples/' if folder else '',
-                                             libcoap_port, dtls_arg)
+    cmd = '{0}coap-server -p {1} {2} {3}'.format('examples/' if folder else '',
+                                             libcoap_port, dtls_arg, ignore_range_arg)
 
     host = ExpectHost(folder, cmd)
     term = host.connect()
