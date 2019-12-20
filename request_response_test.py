@@ -74,7 +74,6 @@ def send_recv_nano(client, server_addr):
 # tests
 #
 
-@pytest.mark.parametrize('libcoap_port', ['5683'])
 def test_client_get(libcoap_server, gcoap_example):
     """Single, simple GET request, non-confirmable and confirmable"""
     send_recv(gcoap_example, False)
@@ -103,14 +102,12 @@ def test_client_get_nano(libcoap_server, nanocoap_cli):
     send_recv_nano(nanocoap_cli, addr)
 
 
-@pytest.mark.parametrize('libcoap_port', ['5683'])
 def test_client_get_repeat(libcoap_server, gcoap_example, qty_repeat):
     """Repeats simple non-confirmable request. See qty_repeat in INI file."""
     for i in range(qty_repeat):
         send_recv(gcoap_example, False)
         time.sleep(1)
 
-@pytest.mark.parametrize('libcoap_port', ['5683'])
 def test_client_server(libcoap_server, gcoap_example, qty_repeat, aiocoap_client):
     """
     Tests gcoap concurrently sending and receiving messages.

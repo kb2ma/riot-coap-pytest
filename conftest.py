@@ -168,7 +168,6 @@ def nanocoap_cli():
     # teardown
     host.disconnect()
 
-
 @pytest.fixture
 def libcoap_client(request_path):
     """Runs a libcoap example client as an ExpectHost to retrieve a response."""
@@ -185,6 +184,11 @@ def libcoap_client(request_path):
 
     host = ExpectHost(folder, cmd_text)
     yield host
+
+@pytest.fixture(scope='session')
+def libcoap_port():
+    """Provides default value for libcoap_server fixture parameter"""
+    return '5683'
 
 @pytest.fixture
 def libcoap_server(libcoap_port):
