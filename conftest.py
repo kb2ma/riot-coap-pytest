@@ -186,6 +186,26 @@ def libcoap_client(request_path):
     host = ExpectHost(folder, cmd_text)
     yield host
 
+@pytest.fixture
+def libcoap_server(libcoap_port):
+    """Runs a libcoap example server process, and provides a pexpect spawn
+       object to interact with it."""
+    folder = os.environ.get('LIBCOAP_BASE', None)
+    if proto_params['is_dtls']:
+        dtls_arg = '-k {0}'.format(proto_params['psk_key'])
+    else:
+        dtls_arg = ''
+
+    cmd = '{0}coap-server -p {1} {2}'.format('examples/' if folder else '',
+                                             libcoap_port, dtls_arg)
+
+    host = ExpectHost(folder, cmd)
+    term = host.connect()
+    yield host
+
+    # teardown
+    host.disconnect()
+
 #
 # hooks
 #

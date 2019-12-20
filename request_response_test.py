@@ -27,25 +27,6 @@ logging.basicConfig(level=logging.INFO)
 #
 
 @pytest.fixture
-def libcoap_server(request):
-    """Runs a libcoap example server process, and provides a pexpect spawn
-       object to interact with it."""
-    folder = os.environ.get('LIBCOAP_BASE', None)
-    if proto_params['is_dtls']:
-        dtls_arg = '-k {0}'.format(proto_params['psk_key'])
-    else:
-        dtls_arg = ''
-
-    cmd = '{0}coap-server {1}'.format('examples/' if folder else '', dtls_arg)
-
-    host = ExpectHost(folder, cmd)
-    term = host.connect()
-    yield host
-
-    # teardown
-    host.disconnect()
-
-@pytest.fixture
 def aiocoap_client():
     """Runs an aiocoap client to query gcoap_example as a server."""
     # server handles same quantity of messages as client sends

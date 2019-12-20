@@ -17,11 +17,16 @@ Expected result: aiocoap prints response code 2.05 and payload for initial
 response to Observe request, and for following notification.
 
 Usage:
-    usage: observe_client.py [-h] -r HOST
+    usage: observe_client.py -r HOST [-c FILE]
+    usage: observe_client.py -h
 
     optional arguments:
       -h, --help  show this help message and exit
       -r HOST     remote host for URI
+      -c FILE     DTLS credentials file, name format: *.json
+
+2019-12-19 Added support here for DTLS use, but waiting on aiocoap DTLS server
+support. See https://github.com/chrysn/aiocoap/issues/98.
 
 Example:
 
@@ -44,8 +49,11 @@ Loop ended, wait 10 sec
 
 import asyncio
 import datetime
+import json
 import logging
 from argparse import ArgumentParser
+from conftest import proto_params
+from pathlib import Path
 
 import aiocoap.resource as resource
 from aiocoap import *
@@ -61,14 +69,19 @@ class TimeResource(resource.Resource):
         return msg
 
 
-async def main(host):
+async def main(host, credentialsFile):
     # setup server resources
+    # As of 2019-12, not using server resources because DTLS server mode not
+    # supported.
     root = resource.Site()
     root.add_resource(('time',), TimeResource())
 
     context = await Context.create_server_context(root)
+    if proto_params['is_dtls']:
+        context.client_credentials.load_from_dict(json.load(credentialsFile.open('rb')))
 
-    msg = Message(code=GET, uri='coap://{0}/cli/stats'.format(host), observe=0)
+    uri = '{0}://{1}/cli/stats'.format(proto_params['uri_proto'], host)
+    msg = Message(code=GET, uri=uri, observe=0)
     req = context.request(msg)
 
     resp = await req.response
@@ -83,7 +96,8 @@ async def main(host):
         break
 
     # Send msg to cancel observation
-    msg = Message(code=GET, uri='coap://{0}/cli/stats'.format(host), observe=1)
+    uri = '{0}://{1}/cli/stats'.format(proto_params['uri_proto'], host)
+    msg = Message(code=GET, uri=uri, observe=1)
     req = context.request(msg)
     resp = await req.response
     print('Final result: %s\n%r'%(resp, resp.payload))
@@ -93,7 +107,10 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-r', dest='host', required=True,
                         help='remote host for URI')
+    parser.add_argument('-c', dest='credentialsFile', type=Path,
+                        help='DTLS credentials file, name format: *.json')
 
     args = parser.parse_args()
 
-    asyncio.get_event_loop().run_until_complete(main(args.host))
+    asyncio.get_event_loop().run_until_complete(main(args.host,
+                                                     args.credentialsFile))
