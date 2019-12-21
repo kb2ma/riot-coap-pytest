@@ -17,6 +17,7 @@ Requires:
 """
 
 import pytest
+import pexpect
 import logging
 
 from conftest import proto_params

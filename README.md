@@ -40,7 +40,7 @@ These tests use the following RIOT based tools, which must be precompiled:
 
 |        Tool        |  Location  | Notes |
 | ------------------ | ---------- | ----- |
-| gcoap              | examples   |       |
+| gcoap              | examples   | For some tests over DTLS (tinydtls PSK), must compile with DTLS_PEER_MAX=2. See the Setup section below.      |
 | nanocoap_server    | examples   |       |
 | cord_ep            | examples   |       |
 | cord_epsim         | examples   | when compile for native2os endpoints, must specify RD_ADDR as TAP_LLADDR_REMOTE from `setup_env.sh`; otherwise aiocoap fails with the default multicast address on local |
@@ -56,16 +56,18 @@ The network/board interfaces used for tests have evolved over time. The table be
 
 |       Test       |     Endpoints      |      SUT           | DTLS (gcoap) |  Tools  | Notes |
 | ---------------- | ------------------ | ------------------ | ----- | ------- | ----- |
-| block1_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | 2019-07-24 OK |
-| block2_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | 2019-07-24 OK |
-| block1_client    | native2native      | nano-block-client, gcoap-block-client | Y | gcoap-block-server | 2019-07-24 OK |
-| block2_client    | native2native      | nano-block-client, gcoap| Y | gcoap-block-server  | 2019-07-24 OK |
-| con_retry        | native2os          | gcoap              |   | libcoap | 2019-07-24 OK |
-| cord_ep          | native2os, slip2os | cord_ep (gcoap)    |   | aiocoap | 2019-07-01 OK |
-| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) |   | aiocoap, libcoap | 2019-07-01 OK |
-| observe          | native2os, slip2os | gcoap              | Y | aiocoap | 2019-12-20 OK |
-| request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | 2019-07-24 OK |
+| block1_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | |
+| block2_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | |
+| block1_client    | native2native      | nano-block-client, gcoap-block-client | Y | gcoap-block-server | |
+| block2_client    | native2native      | nano-block-client, gcoap| Y | gcoap-block-server  | |
+| con_retry        | native2os          | gcoap              | Y | libcoap | |
+| cord_ep          | native2os, slip2os | cord_ep (gcoap)    | Y (1)  | aiocoap | |
+| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | Y (1)  | aiocoap, libcoap | |
+| observe          | native2os, slip2os | gcoap              | Y | aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
+| request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
 | request_response | slip2os            | gcoap              |   | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
+
+ 1. Untested over DTLS; aiocoap and libcoap Resource Directory server examples do not  support DTLS.
 
 Each test named above is implemented in the file **[name]_test.py**.
 
