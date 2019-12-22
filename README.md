@@ -16,7 +16,7 @@ aiocoap
 -------
 [aiocoap](https://github.com/chrysn/aiocoap) is a Python based CoAP library. Use at least version 0.4b1. Must install packages *linkheader* and *tinydtls*. See the *Slimmer installations* portion of the aiocoap docs.
 
-The tinydtls package actually is an alias for the Python [DTLSSocket](https://git.fslab.de/jkonra2m/tinydtls-cython) library. We require v0.1.11a2, however at time of writing, this version had not been released to PyPI. So, we must install from a source code checkout. The *checkout* command below corresponds to that version.
+The tinydtls package actually is an alias for the Python [DTLSSocket](https://git.fslab.de/jkonra2m/tinydtls-cython) library. We require v0.1.11a2 or greater, however at time of writing, this version had not been released to PyPI. So, we must install from a source code checkout. The *checkout* command below corresponds to that version.
 
 ```
    $ git clone https://git.fslab.de/jkonra2m/tinydtls-cython.git
@@ -31,12 +31,12 @@ Other projects
 
 |  Project  | Notes |
 | --------- | ----- |
-| [libcoap](https://github.com/obgm/libcoap) | C based, embeddable CoAP library, v4.2.1 for compatible tinydtls support. Using example client and server  |
+| [libcoap](https://github.com/obgm/libcoap) | C based, embeddable CoAP library, v4.2.1 or greater for compatible tinydtls support. Using example client and server.  |
 [riot-apps](https://github.com/kb2ma/riot-apps) | forked from RIOT-OS/applications, use *kb2ma-master* branch; using blockwise test apps |
 
 RIOT Tools
 ----------
-These tests use the following RIOT based tools, which must be precompiled:
+These tests use the following RIOT based tools, which must be precompiled. For the location, *examples* and *tests* are in the main [RIOT](https://github.com/RIOT-OS/RIOT) repository, while *riot-apps* are in the location linked above in the *Other projects* section.
 
 |        Tool        |  Location  | Notes |
 | ------------------ | ---------- | ----- |
@@ -52,7 +52,14 @@ These tests use the following RIOT based tools, which must be precompiled:
 
 Setup
 =====
-The network/board interfaces used for tests have evolved over time. The table below show the currently supported setups.
+The network/board interfaces used for tests have evolved over time. The table below shows the currently supported setups.
+
+All of the tests based on gcoap (as opposed to nanocoap) may be run with messaging over plain UDP or over DTLS, except as noted in *DTLS* column in the table below. We have tested DTLS using tinydtls and PSK mode. The Makefile for the application to run must include two definitions:
+
+```
+USEMODULE += tinydtls_sock_dtls
+CFLAGS += -DDTLS_PSK
+```
 
 |       Test       |     Endpoints      |      SUT           | DTLS (gcoap) |  Tools  | Notes |
 | ---------------- | ------------------ | ------------------ | ----- | ------- | ----- |
