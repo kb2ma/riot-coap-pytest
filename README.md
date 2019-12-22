@@ -26,6 +26,17 @@ The tinydtls package actually is an alias for the Python [DTLSSocket](https://gi
 
 **Note** The first time I tried to install DTLSSocket, I received an error: "error: unknown file type '.pyx' (from 'DTLSSocket/dtls.pyx')". This filename extension is used by the Cython package, and Cython was installed with the DTLSSocket installation. I uninstalled DTLSSocket, and reinstalled it without an error. So don't despair if you see this error on the first installation of DTLSSocket. :-)
 
+cf-rdsec
+--------
+[cf-rdsec](https://github.com/kb2ma/californium.tools/tree/kb2ma-master/cf-rdsec) is a secure Resource Directory server, based on the Java based Eclipse Californium project. It is useful for testing the cord clients in DTLS mode. Neither aiocoap nor libcoap includes such an example.
+
+To build and run cf-rdsec:
+```
+   $ mvn clean install
+   $ cd run
+   $ java -jar cf-rdsec-2.0.0-SNAPSHOT.jar PSK
+```
+
 Other projects
 --------------
 
@@ -67,14 +78,15 @@ CFLAGS += -DDTLS_PSK
 | block2_server    | native2os          | nanocoap_server, gcoap-block-server | Y | aiocoap | |
 | block1_client    | native2native      | nano-block-client, gcoap-block-client | Y | gcoap-block-server | |
 | block2_client    | native2native      | nano-block-client, gcoap| Y | gcoap-block-server  | |
-| con_retry        | native2os          | gcoap              | Y | libcoap | |
-| cord_ep          | native2os, slip2os | cord_ep (gcoap)    | Y (1)  | aiocoap | |
-| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | Y (1)  | aiocoap, libcoap | |
+| con_retry        | native2os          | gcoap              | Y (1) | libcoap | |
+| cord_ep          | native2os, slip2os | cord_ep (gcoap)    | N (2)  | aiocoap, cf-rdsec | |
+| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | N (2)  | aiocoap, cf-rdsec, libcoap | 2019-12-22 don't know yet if cf-rdsec works with cord_epsim. According to cf-rdsec docs, it supports up to draft 4 of the RD spec |
 | observe          | native2os, slip2os | gcoap              | Y | aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
 | request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
 | request_response | slip2os            | gcoap              |   | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
- 1. Untested over DTLS; aiocoap and libcoap Resource Directory server examples do not  support DTLS.
+ 1. Requires unmerged RIOT PR [#12959](https://github.com/RIOT-OS/RIOT/pull/12959) to work
+ 2. The cord examples process messages synchronously, which does not work with gcoap over DTLS.
 
 Each test named above is implemented in the file **[name]_test.py**.
 
