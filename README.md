@@ -65,7 +65,7 @@ Setup
 =====
 The network/board interfaces used for tests have evolved over time. The table below shows the currently supported setups.
 
-All of the tests based on gcoap (as opposed to nanocoap) may be run with messaging over plain UDP or over DTLS, except as noted in *DTLS* column in the table below. We have tested DTLS using tinydtls and PSK mode. The Makefile for the application to run must include two definitions:
+All of the tests based on gcoap (as opposed to nanocoap) may be run with messaging over plain UDP or over DTLS, except as noted in the *DTLS* column in the table below. We have tested DTLS using tinydtls and PSK mode. The Makefile for the application to run must include two definitions:
 
 ```
 USEMODULE += tinydtls_sock_dtls
@@ -80,13 +80,13 @@ CFLAGS += -DDTLS_PSK
 | block2_client    | native2native      | nano-block-client, gcoap| Y | gcoap-block-server  | |
 | con_retry        | native2os          | gcoap              | Y (1) | libcoap | |
 | cord_ep          | native2os, slip2os | cord_ep (gcoap)    | N (2)  | aiocoap, cf-rdsec | |
-| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | N (2)  | aiocoap, cf-rdsec, libcoap | 2019-12-22 don't know yet if cf-rdsec works with cord_epsim. According to cf-rdsec docs, it supports up to draft 4 of the RD spec |
-| observe          | native2os, slip2os | gcoap              | Y | aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
-| request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | for DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2 |
+| cord_epsim       | native2os, slip2os | cord_epsim (gcoap) | N (2)  | aiocoap, cf-rdsec, libcoap | 2019-12-22 Don't know yet if cf-rdsec works with cord_epsim. According to cf-rdsec docs, it supports up to draft 4 of the RD spec |
+| observe          | native2os, slip2os | gcoap              | Y | aiocoap | For DTLS (tinydtls PSK) must compile gcoap with DTLS_PEER_MAX=2. |
+| request_response | native2os          | nanocoap_cli, gcoap | Y | libcoap, aiocoap | For test_client_server over DTLS (tinydtls PSK), must compile gcoap with DTLS_PEER_MAX=2. |
 | request_response | slip2os            | gcoap              |   | libcoap, aiocoap | Must run gcoap tests one by one to avoid running the nanocoap test. |
 
  1. Requires unmerged RIOT PR [#12959](https://github.com/RIOT-OS/RIOT/pull/12959) to work
- 2. The cord examples process messages synchronously, which does not work with gcoap over DTLS.
+ 2. The cord examples process messages in a synchronous way that does not work with gcoap over DTLS.
 
 Each test named above is implemented in the file **[name]_test.py**.
 
