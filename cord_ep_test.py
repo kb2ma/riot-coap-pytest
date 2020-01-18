@@ -39,9 +39,10 @@ def cord_cli():
 @pytest.fixture
 def rd_server():
     """Runs an aiocoap Resource Directory server as an ExpectHost."""
-    folder = os.environ.get('AIOCOAP_BASE', None)
+    folder = os.environ.get('LIBCOAP_BASE', None)
 
-    host = ExpectHost(folder, './aiocoap-rd')
+    cmd = '{0}coap-rd'.format('examples/' if folder else '')
+    host = ExpectHost(folder, cmd)
     term = host.connect()
     # allow a couple of seconds for initialization
     time.sleep(2)
