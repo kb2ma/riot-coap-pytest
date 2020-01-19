@@ -118,10 +118,10 @@ Some tests use a tap bridge to communicate between two RIOT instances. In this c
 
 ```
     $ cd $RIOTBASE/dist/tools/tapsetup/
-    $ ./tapsetup -c 2
+    $ sudo ./tapsetup -c 2
 
     # to delete the tap
-    $ ./tapsetup -d
+    $ sudo ./tapsetup -d
 ```
 
 slip2os
