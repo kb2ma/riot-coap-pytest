@@ -163,7 +163,8 @@ def nanocoap_cli():
 
     host = ExpectHost(os.path.join(base_folder, 'tests/nanocoap_cli'), 'make term')
     term = host.connect()
-    term.expect('nanocoap test app')
+    term.expect('Press s to start test')
+    host.send_recv('s', 'nanocoap test app')
 
     yield host
 
