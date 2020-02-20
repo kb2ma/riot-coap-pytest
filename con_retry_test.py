@@ -22,7 +22,7 @@ import logging
 
 from conftest import proto_params
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename='con_retry.log')
 
 #
 # fixtures and utility functions
